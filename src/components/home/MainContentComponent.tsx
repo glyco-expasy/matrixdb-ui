@@ -1,17 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
-import {Grid, List, ListItemText, Tooltip} from "@mui/material";
+import {Box, Grid, Tooltip} from "@mui/material";
 import http from "../../commons/http-commons";
-import {faCircleNodes, faScrewdriverWrench} from "@fortawesome/free-solid-svg-icons";
+import {faCircleNodes} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import BiomoleculeCircularDisplayComponent from "../statistics/BiomoleculeCircularDisplayCompotnent";
-import ExperimentPieChartComponent from "../statistics/ExperimentPieChartComponent";
 import InteractionHeatMapComponent from "../statistics/InteractionHeatMapComponent";
 import cytoscapeLogo from "../../assets/images/cytoscape.png";
 import ProteinProteinInteractionComponent from "../statistics/ProteinProteinInteractionComponent";
 import LogoIcon from "../commons/icons/LogoIcon";
-import BiomoleculeBySpeciesComponent from "../statistics/BiomoleculeBySpecies";
+import CirclePacking from "../statistics/BiomoleculeBySpeciesCirclePacking";
+import imexlogo from "../../assets/images/imexlogo.png";
+
 
 
 function MainContentComponent() {
@@ -19,15 +20,6 @@ function MainContentComponent() {
     const [biomoleculeStatistics, setBiomoleculeStatistics] = useState<any>([]);
     const [interactionStatistics, setInteractionStatistics] = useState<any[]>([]);
     const [proteinProteinInteractionStatistics, setProteinProteinInteractionStatistics] = useState<any>(null);
-
-    const logosData = [
-        { logoName: "uniprot", text: "UniProt" },
-        { logoName: "chebi", text: "ChEBI" },
-        { logoName: "complex-portal", text: "Complex Portal" },
-        { logoName: "intact", text: "Intact" },
-        { logoName: "matrisome", text: "Matrisome Project" },
-        { logoName: "bgee", text: "Bgee" }
-    ];
 
     useEffect(() => {
         http.get("/statistics/")
@@ -100,7 +92,7 @@ function MainContentComponent() {
                     { row: 'PFRAG', column: 'Other', value: interactionData.pfrag_other ||  0},
                     { row: 'GAG', column: 'Other', value: interactionData.gag_other || 0},
                     { row: 'Multimer', column: 'Other', value: interactionData.multimer_other || 0 },
-                    { row: 'Other', column: 'Other', value: 0 },
+                    { row: 'Other', column: 'Other', value: interactionData.other_other || 0 },
                 ];
                 setInteractionStatistics(interactionStatistics);
                 setProteinProteinInteractionStatistics({
@@ -161,12 +153,12 @@ function MainContentComponent() {
                     }}>
                     MatrixDB Content
                 </Typography>
-                <div style={{
+                {/*<div style={{
                     display: 'flex',
                     width: '70%'
-                }}>
+                }}>*/}
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             {
                                 interactionStatistics && interactionStatistics.length > 0 &&
                                 <Card style={{ flex: '1', margin: '10px', ...cardStyle }}>
@@ -179,7 +171,7 @@ function MainContentComponent() {
                                             marginTop: '15px',
                                             fontWeight: 'bold'
                                         }}>
-                                        Experimentally Supported Binary Interactions
+                                        <a href="/naming">Experimentally Supported Binary Interactions</a>
                                         <br/>
                                         ({statistics.interactions.all - statistics.interactions.protein_protein.predicted})
                                     </Typography>
@@ -191,7 +183,7 @@ function MainContentComponent() {
                                 </Card>
                             }
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             {proteinProteinInteractionStatistics && <Card
                                 style={{
                                     flex: '1',
@@ -230,15 +222,15 @@ function MainContentComponent() {
                             </Card>}
                         </Grid>
                     </Grid>
-                </div>
-                <div
+                {/*</div>*/}
+                {/*<div
                     style={{
                         display: 'flex',
                         width: '70%'
                     }}
-                >
+                >*/}
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             {statistics.biomolecules &&
                                 <Card
                                     style={{
@@ -257,17 +249,27 @@ function MainContentComponent() {
                                             marginBottom: '10px',
                                             fontWeight: 'bold'
                                         }}>
-                                        Biomolecules {statistics.biomolecules.all }
+                                        <a href={"/naming"}>Biomolecules </a> ({statistics.biomolecules.all })
                                     </Typography>
                                     <BiomoleculeCircularDisplayComponent
                                         biomoleculeStatistics={biomoleculeStatistics}
-                                        width={240}
+                                        width={400}
                                         height={240}
                                     />
+                                    <Typography
+                                        component="div"
+                                        style={{
+                                            color: 'darkblue',
+                                            textAlign: 'left',
+                                            marginLeft: '10px',
+                                            marginBottom: '10px'
+                                        }}>
+                                        <a href={"/naming"}>MatrixDB Nomenclature </a>
+                                    </Typography>
                                 </Card>
                             }
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} sm={12} md={6}>
                             {statistics.biomolecules && <Card style={{ flex: '1', margin: '10px', ...cardStyle }}>
                                 <Typography
                                     component="div"
@@ -281,13 +283,13 @@ function MainContentComponent() {
                                     }}>
                                     Protein, Multimer & Protein Fragments by Species
                                 </Typography>
-                                <BiomoleculeBySpeciesComponent
+                                <CirclePacking
                                     biomoleculeStatistics={biomoleculeStatistics}
                                 />
                             </Card>}
                         </Grid>
                     </Grid>
-                </div>
+                {/*}</div>*/}
             </div>
 
             <div style={{
@@ -310,11 +312,11 @@ function MainContentComponent() {
                     Build Interaction Networks
                 </Typography>
                 <Typography
-                    variant={'body2'}
+                    variant={'body1'}
                     style={{
                         marginBottom: '5px',
                         marginTop: '5px',
-                        width: '50%'
+                        width: '70%'
                     }}>
                     <FontAwesomeIcon
                         icon={faCircleNodes}
@@ -324,17 +326,17 @@ function MainContentComponent() {
                         }}
                         color='green'
                     />
-                    Interaction networks can be built and filtered using <a href="/networks" target="_blank">Network explorer</a>
+                    Interaction networks can be built, filtered and modified using <a href="/networks" target="_blank">Network explorer</a>
                 </Typography>
                 <Typography
-                    variant={'body2'}
+                    variant={'body1'}
                     style={{
                         marginBottom: '5px',
                         marginTop: '5px',
-                        width: '50%'
+                        width: '70%'
                     }}>
                     <img src={cytoscapeLogo} style={{width: '25px', height: 'auto'}}/>
-                    Interaction network can be exported as an image or in cytoscape compatible format
+                    Interaction network export is available as image (svg), tabular (.csv) or Cytoscape (.json) format
                 </Typography>
             </div>
             <div style={{
@@ -356,29 +358,107 @@ function MainContentComponent() {
                     }}>
                     Data Sources
                 </Typography>
-                <div
-                    style={{
-                        display: 'flex',
-                        width: '60%'
-                    }}
-                >
-                    <Grid container spacing={2}>
-                        {logosData.map((item, index) => (
-                            <Grid key={index} item xs={12} sm={4} md={4} lg={4}>
-                                <div style={{ display: "flex", flexDirection: "row" }}>
-                                    <div style={{ display: "flex" }}>
-                                        <LogoIcon logoName={item.logoName} width="60" height="auto" />
-                                    </div>
-                                    <div style={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-                                        <Typography variant="body2" style={{ fontWeight: 'bold', marginLeft: '5px' }}>
-                                            {item.text}
-                                        </Typography>
-                                    </div>
-                                </div>
-                            </Grid>
-                        ))}
+
+                <Grid container spacing={2} direction="column">
+                    <Grid item xs={12}>
+                        <div style={{ textAlign: 'center' }}>
+                            <Typography variant="body2" gutterBottom style={{ fontWeight: 'bold' }}>
+                                Interaction Data
+                            </Typography>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                                <a href="https://matrixdb.univ-lyon1.fr/" target="_blank">
+                                    <LogoIcon logoName="matrixdb" width="50" height="auto" />
+                                </a>
+                                <a href="https://www.imexconsortium.org/" target="_blank">
+                                    <LogoIcon logoName="imex" width="60" height="auto" />
+                                </a>
+                                <a href="https://www.ebi.ac.uk/intact/" target="_blank">
+                                    <LogoIcon logoName="intact" width="100" height="auto" />
+                                </a>
+                                <Typography variant="body1">
+                                    <a href="http://iid.ophid.utoronto.ca/" target="_blank">Integrated Interactions Database (IID)</a>
+                                </Typography>
+                            </div>
+                        </div>
                     </Grid>
-                </div>
+
+                    <Grid item xs={12}>
+                        <div style={{ textAlign: 'center' }}>
+                            <Typography variant="body2" gutterBottom style={{ fontWeight: 'bold' }}>
+                                Biomolecule Data
+                            </Typography>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+                                    <a href="https://www.uniprot.org/" target="_blank" rel="noopener noreferrer">
+                                        <LogoIcon logoName="uniprot" width="30" height="auto" />
+                                    </a>
+                                    <Typography variant="body1" ml={1} style={{ paddingTop: '10px'}}>
+                                        <a href="https://www.uniprot.org/" target="_blank" rel="noopener noreferrer">
+                                            UniProtKB
+                                        </a>
+                                    </Typography>
+                                </Box>
+
+                                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+                                    <a href="https://www.ebi.ac.uk/chebi/" target="_blank" rel="noopener noreferrer">
+                                        <LogoIcon logoName="chebi" width="40" height="auto" />
+                                    </a>
+                                    <Typography variant="body1" ml={1}>
+                                        <a href="https://www.ebi.ac.uk/chebi/" target="_blank" rel="noopener noreferrer">
+                                            ChEBI
+                                        </a>
+                                    </Typography>
+                                </Box>
+
+                                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+                                    <a href="https://www.ebi.ac.uk/complexportal/" target="_blank" rel="noopener noreferrer">
+                                        <LogoIcon logoName="complex-portal" width="20" height="auto" />
+                                    </a>
+                                    <Typography variant="body1" ml={1} style={{ paddingTop: '10px'}}>
+                                        <a href="https://www.ebi.ac.uk/complexportal/" target="_blank" rel="noopener noreferrer">
+                                            Complex Portal
+                                        </a>
+                                    </Typography>
+                                </Box>
+                            </div>
+                        </div>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                            <Box display="flex" flexDirection="row" gap={4} mb={2}>
+                            {/* Expression Data */}
+                            <div style={{ textAlign: 'center' }}>
+                                <Typography variant="body2" gutterBottom style={{ fontWeight: 'bold' }}>
+                                    Expression Data
+                                </Typography>
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                                    <a href="https://www.bgee.org/" target="_blank" rel="noopener noreferrer">
+                                        <LogoIcon logoName="bgee" width="auto" height="30" />
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Proteomic Data */}
+                            <div style={{ textAlign: 'center' }}>
+                                <Typography variant="body2" gutterBottom style={{ fontWeight: 'bold' }}>
+                                    Proteomic Data
+                                </Typography>
+                                <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+                                    <a href="https://matrisomedb.org/" target="_blank" rel="noopener noreferrer">
+                                        <LogoIcon logoName="matrisome" width="100" height="auto" />
+                                    </a>
+                                    <Typography variant="body1">
+                                        <a href="https://matrisomedb.org/" target="_blank" rel="noopener noreferrer">
+                                            MatrisomeDB 2.0
+                                        </a>
+                                    </Typography>
+                                </Box>
+                            </div>
+                            </Box>
+                        </div>
+                    </Grid>
+                </Grid>
+
             </div>
         </>
     );

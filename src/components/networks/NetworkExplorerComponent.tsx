@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {
     Alert, Box, Card, Grid,
     IconButton, LinearProgress,
-    Typography, Tabs, Tab
+    Typography, Tabs, Tab, Paper
 } from "@mui/material";
 import AssociationNetworkComponent from "./AssociationNetworkComponent";
 import http from "../../commons/http-commons";
@@ -16,7 +16,11 @@ import CircleIcon from "@mui/icons-material/Circle";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HelpDrawerComponent from "../help/HelpDrawerComponent";
 import BiomoleculeSelectionComponent from "./BiomoleculeSelectionComponent";
-import {getFromLocalStorage} from "../../commons/memory-manager";
+import {getFromLocalStorage, saveToLocalStorage} from "../../commons/memory-manager";
+import NetworkParticipantBoard from "./NetworkParticipantBoardComponent";
+import InfiniteScrollingList from "../commons/lists/InfinteScrollingList";
+import BiomoleculeCard from "../commons/cards/BiomoleculeCards";
+import BiomoleculeFilter from "./biomolecule-filter/BiomoleculeFilter";
 
 const mapStateToProps = (state: RootState) => ({
     currentState: state.currentState,
@@ -37,14 +41,14 @@ const NetworkExplorer: React.FC<any> = ({
                                         }) => {
 
     const [searchQuery, setSearchQuery] = useState<string|null>(null);
-    const [loadingSuggestions, setLoadingSuggestions] = useState<boolean>(false);
     const [loadingNetwork, setLoadingNetwork] = useState<boolean>(false);
     const [biomolecules, setBiomolecules] = useState<any[] | []>([]);
-    const [selectedBiomolecules, setSelectedBiomolecules] = useState<any[] | []>([]);
+    const [selectedParticipants, setSelectedParticipants] = useState<any[] | []>([]);
 
     const [network, setNetwork] = useState<any | null>(null);
     const [networkGenerationError, setNetworkGenerationError] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
+
     const searchBoxCardStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -62,15 +66,36 @@ const NetworkExplorer: React.FC<any> = ({
             });
     }, []);
 
+    const onParticipantAdd = (biomolecule: any[]) => {
+        let newSelectedBiomolecules = [...selectedParticipants, ...biomolecule];
+        let uniqueBiomolecules = new Map(newSelectedBiomolecules.map(item => [item.biomolecule_id, item]));
+        setSelectedParticipants([...uniqueBiomolecules.values()]);
+
+        //let biomolecules = getFromLocalStorage("selectedBiomolecules");
+        //saveToLocalStorage("selectedBiomolecules", [...biomolecules, biomolecule.biomolecule_id]);
+        //props.onSelectionChange(newSelectedBiomolecules);
+    }
+
+    const onParticipantRemove = (biomoleculeToRemove: any) => {
+        let newSelectedBiomolecules = selectedParticipants
+            .filter((biomolecule: any) => biomolecule.biomolecule_id !== biomoleculeToRemove.biomolecule_id);
+        setSelectedParticipants(newSelectedBiomolecules);
+        //props.onSelectionChange(newSelectedBiomolecules);
+    }
+
+    const onGenerateNetwork = (onlyDirectPartners: boolean) => {
+        generateNetwork(onlyDirectPartners);
+    }
+
     const onSelectionChange = (selectedBiomolecules: any) => {
-        setSelectedBiomolecules(selectedBiomolecules);
+        setSelectedParticipants(selectedBiomolecules);
     }
 
     const generateNetwork = (onlyDirectPartners: boolean) => {
-        if(selectedBiomolecules && selectedBiomolecules.length > 0 ) {
+        if(selectedParticipants && selectedParticipants.length > 0 ) {
             setLoadingNetwork(true);
             setValue(1);
-            let biomoleculeIds = selectedBiomolecules.map((biomolecule: any) => biomolecule.biomolecule_id);
+            let biomoleculeIds = selectedParticipants.map((biomolecule: any) => biomolecule.biomolecule_id);
             http.post("/network", {
                 biomolecules: biomoleculeIds,
                 onlyDirectPartners: onlyDirectPartners
@@ -90,28 +115,12 @@ const NetworkExplorer: React.FC<any> = ({
         }
     };
 
-    const launchSearch = (query: string) => {
-        setLoadingSuggestions(true);
-        http.get(`/search?query=${query}`)
-            .then((suggestionResponse) => {
-                // Only consider the bimolecules with interactions
-                let biomoleculesWithInteractions = suggestionResponse.data.biomolecules.filter((biomolecule: any) => biomolecule.interaction_count > 0);
-                setBiomolecules(biomoleculesWithInteractions);
-                setLoadingSuggestions(false);
-                setValue(0);
-            });
-    }
-
     const onPressEnter = (e: React.KeyboardEvent, searchQuery: string) =>{
         setSearchQuery(searchQuery);
-        if(searchQuery && searchQuery.length >= 3) {
-            launchSearch(searchQuery);
-        }
     };
 
     const onClickSearch = (query: string) => {
         setSearchQuery(query);
-        launchSearch(query);
     }
 
     const onSearchTextChange = (e : any) => {
@@ -165,8 +174,7 @@ const NetworkExplorer: React.FC<any> = ({
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center",
-                paddingTop: "20px"
+                justifyContent: "center"
             }}>
                 <div style={{
                     display: 'flex',
@@ -177,7 +185,8 @@ const NetworkExplorer: React.FC<any> = ({
                 }}>
                     <div style={{
                         width: '70%',
-                        paddingBottom: '10px'
+                        paddingBottom: '10px',
+                        paddingTop: '20px'
                     }}>
                         <Box sx={{
                             backgroundColor: 'lightcoral'
@@ -274,7 +283,7 @@ const NetworkExplorer: React.FC<any> = ({
                     </div>
                 }
                 {
-                    biomolecules.length > 0  &&
+                    ((biomolecules && biomolecules.length > 0) || searchQuery) &&
                     <div style={{
                         display: 'flex',
                         width: '100%',
@@ -289,7 +298,7 @@ const NetworkExplorer: React.FC<any> = ({
                                 alignItems: 'center'
                             }}>
                                 <div style={{
-                                    width: '70%'
+                                    width: '90%'
                                 }}>
                                     <Grid
                                         container
@@ -321,20 +330,55 @@ const NetworkExplorer: React.FC<any> = ({
                                                         }
                                                     </Tabs>
                                                     <TabPanel value={value} index={0}>
-                                                        <BiomoleculeSelectionComponent
-                                                            searchQuery={searchQuery}
-                                                            biomolecules={biomolecules}
-                                                            selectedBiomolecules={selectedBiomolecules}
-                                                            onSelectionChange={onSelectionChange}
-                                                            onGenerateNetwork={generateNetwork}
-                                                        />
+                                                        <div style={{
+                                                            display: 'flex',
+                                                            width: '100%',
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            padding: '0'
+                                                        }}>
+                                                            <Grid
+                                                                container
+                                                                spacing={0}
+                                                                sx={{
+                                                                    width: '100%'
+                                                                }}
+                                                            >
+                                                                {
+                                                                    <Grid item xs={12} md={3} sm={3}>
+                                                                        <div style={{
+                                                                            overflow: 'auto'
+                                                                        }}>
+                                                                            {
+                                                                                selectedParticipants &&
+                                                                                <NetworkParticipantBoard
+                                                                                    participants={selectedParticipants}
+                                                                                    onClear={() => setSelectedParticipants([])}
+                                                                                    onBiomoleculeRemove={onParticipantRemove}
+                                                                                    onGenerate={onGenerateNetwork}
+                                                                                />
+                                                                            }
+                                                                        </div>
+                                                                    </Grid>
+                                                                }
+                                                                {
+                                                                    <BiomoleculeSelectionComponent
+                                                                        searchQuery={searchQuery}
+                                                                        onParticipantAdd={onParticipantAdd}
+                                                                        onParticipantRemove={onParticipantRemove}
+                                                                        onSelectionChange={onSelectionChange}
+                                                                        onGenerateNetwork={generateNetwork}
+                                                                    />
+                                                                }
+                                                            </Grid>
+                                                        </div>
                                                     </TabPanel>
                                                     {
                                                         network && !loadingNetwork &&
                                                         <TabPanel value={value} index={1}>
                                                             <Grid item xs={12} md={12} sm={12}>
                                                                 <AssociationNetworkComponent
-                                                                    biomoleculeIds={selectedBiomolecules.map((biomolecule: any) => biomolecule.biomolecule_id) as string[]}
+                                                                    biomoleculeIds={selectedParticipants.map((biomolecule: any) => biomolecule.biomolecule_id) as string[]}
                                                                 />
                                                             </Grid>
                                                         </TabPanel>
@@ -487,7 +531,7 @@ const NetworkExplorer: React.FC<any> = ({
                                     textAlign: 'center',
                                 }}>
                                     <Typography variant={'body1'}>
-                                        Building interaction network for {selectedBiomolecules.map((b: any) => b.biomolecule_id).join(', ')}
+                                        Building interaction network for {selectedParticipants.map((b: any) => b.biomolecule_id).join(', ')}
                                     </Typography>
                                     <LinearProgress />
                                 </Box>

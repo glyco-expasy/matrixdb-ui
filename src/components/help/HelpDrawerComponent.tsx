@@ -4,6 +4,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CircleIcon from "@mui/icons-material/Circle";
 import NetworkExplorerHelp from "./NetworkExplorerHelp";
 import SearchHelp from "./SearchHelp";
+import BiomoleculeHelp from "./BiomoleculeHelp";
 
 function HelpDrawerComponent(props: any) {
 
@@ -74,6 +75,10 @@ function HelpDrawerComponent(props: any) {
                 {
                     helpType === 'SEARCH' &&
                     <SearchHelp/>
+                }
+                {
+                    helpType === 'BIOMOLECULE' &&
+                    <BiomoleculeHelp/>
                 }
 
             </div>

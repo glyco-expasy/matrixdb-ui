@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from 'react';
 import {
-    Box, CircularProgress,
+    Box, CircularProgress, IconButton,
     Paper,
     Popover,
     Tab,
@@ -13,6 +13,8 @@ import Anatomogram from "@ebi-gene-expression-group/anatomogram";
 import * as d3 from 'd3';
 import http from "../../commons/http-commons";
 import SelectableList from "../commons/lists/SelectableList";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpDrawerComponent from "../help/HelpDrawerComponent";
 
 interface BarChartData {
     group: string,
@@ -137,6 +139,7 @@ function ExpressionComponent(props: any) {
     const [expressionTypes, setExpressionTypes] = useState<string[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [selectedProtemicsSampleIndex, setSelectedProteomicsSampleIndex] = useState<number | null>(null);
+    const [openHelp, setOpenHelp] = useState(false);
 
     const paperStyle = {
         background: 'rgba(255, 255, 255, 0.9)',
@@ -324,9 +327,10 @@ function ExpressionComponent(props: any) {
         );
     };
 
-    const ExpressionBox: React.FC<{ tissue: string; protein: string; gene: string; score: number, maxScore: number }> =
-        ({ tissue, protein, gene, score, maxScore }) => {
+    const ExpressionBox: React.FC<{ unit: string, tissue: string; protein: string; gene: string; score: number, maxScore: number }> =
+        ({ unit, tissue, protein, gene, score, maxScore }) => {
         const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const [hidePopOver, setHidePopOver] = useState<boolean>(true);
 
         const backgroundColor = score === 0
             ? 'rgb(220, 220, 220)'
@@ -334,10 +338,12 @@ function ExpressionComponent(props: any) {
 
         const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
             setAnchorEl(event.currentTarget);
+            setHidePopOver(false);
         };
 
         const handleMouseLeave = () => {
             setAnchorEl(null);
+            setHidePopOver(true);
         };
 
         return (
@@ -356,15 +362,25 @@ function ExpressionComponent(props: any) {
                         cursor: 'pointer',
                     }}
                 />
-                <ExpressionPopOver
-                    anchorEl={anchorEl}
-                    expressionData={{ protein, gene, tissue, score }}
-                    handleMouseLeave={handleMouseLeave} />
+                {
+                    !hidePopOver &&
+                    <ExpressionPopOver
+                        unit={unit}
+                        anchorEl={anchorEl}
+                        expressionData={{ protein, gene, tissue, score }}
+                        handleMouseLeave={handleMouseLeave}
+                    />
+                }
             </Box>
         );
     };
 
-    const ExpressionPopOver: React.FC<{ anchorEl: HTMLElement | null; expressionData: ExpressionData; handleMouseLeave: () => void }> = ({ anchorEl, expressionData, handleMouseLeave }) => {
+    const ExpressionPopOver: React.FC<{
+        unit: string,
+        anchorEl: HTMLElement | null;
+        expressionData: ExpressionData;
+        handleMouseLeave: () => void
+    }> = ({ unit, anchorEl, expressionData, handleMouseLeave }) => {
         const open = Boolean(anchorEl);
 
         return (
@@ -393,9 +409,11 @@ function ExpressionComponent(props: any) {
                     <Typography>
                         Tissue: {expressionData.tissue}
                     </Typography>
-                    <Typography>
-                        TPM: {expressionData.score.toFixed(2)}
-                    </Typography>
+                    { unit &&
+                        <Typography>
+                            {unit}: {expressionData.score.toFixed(2)}
+                        </Typography>
+                    }
                 </Paper>
             </Popover>
         );
@@ -460,13 +478,14 @@ function ExpressionComponent(props: any) {
     }
 
     interface ExpressionTrackProps {
+        protein: string,
+        unit: string,
         tissues: string[],
         expressionSamples: ExpressionSamples
     }
     const ExpressionTrackComponent: React.FC<ExpressionTrackProps> = ( props ) => {
 
-        const {tissues, expressionSamples} = props;
-        const [sortedExpressionSamples, setSortedExpressionSamples] = useState<ExpressionSamples>();
+        const { protein, unit, tissues, expressionSamples} = props;
         const [maxScore, setMaxScore] = useState<number>(0);
 
         useEffect(() => {
@@ -517,6 +536,7 @@ function ExpressionComponent(props: any) {
                             {tissues && tissues.map((tissue: string, innerIndex: number) => (
                                     <>
                                         <ExpressionBox
+                                            unit={unit}
                                             key={innerIndex}
                                             tissue={tissue}
                                             protein={protein}
@@ -603,6 +623,7 @@ function ExpressionComponent(props: any) {
                                                 }
                                                 return (
                                                     <ExpressionBox
+                                                        unit="TPM"
                                                         tissue={key}
                                                         protein={protein}
                                                         gene={gene}
@@ -696,8 +717,12 @@ function ExpressionComponent(props: any) {
                                 marginRight: '20px',
                                 flexDirection: 'column'
                             }}>
-                                <ExpressionTissueHeader tissueNames={tissueNames}/>
+                                <ExpressionTissueHeader
+                                    tissueNames={tissueNames}
+                                />
                                 <ExpressionTrackComponent
+                                    protein={selectedProtein}
+                                    unit={"Normalized Spectral Abundance Factor (NSAF)"}
                                     tissues={tissueNames}
                                     expressionSamples={expressionSamplesByProtein[selectedProtein]}
                                 />
@@ -720,8 +745,27 @@ function ExpressionComponent(props: any) {
                             <>
                                 <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
                                     <span style={{paddingLeft: '10px'}}>
-                                        <h3>Transcriptomic & Proteomic Data</h3>
+                                        <h3>Expression Data</h3>
                                     </span>
+                                    <div style={{
+                                        display: "flex",
+                                        width: "5%",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        marginLeft: 'auto'
+                                    }}>
+                                        <IconButton
+                                            onClick={() => setOpenHelp(true)}
+                                            size={'small'}
+                                        >
+                                            <HelpOutlineIcon/>
+                                        </IconButton>
+                                        <HelpDrawerComponent
+                                            helpType="BIOMOLECULE"
+                                            open={openHelp}
+                                            onClose={() => setOpenHelp(false)}
+                                        />
+                                    </div>
                                 </div>
 
                                 <Tabs value={tabValue} onChange={handleTabChange} centered>

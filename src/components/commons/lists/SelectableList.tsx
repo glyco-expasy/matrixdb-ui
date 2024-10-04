@@ -32,7 +32,7 @@ const SelectableList: React.FC<any> = (props: any) => {
                         style={{
                             width: '20px',
                             paddingRight: '10px'
-                    }}/>
+                        }}/>
                     <Typography variant={'body2'}>
                         <a
                             href={`${itemURL}${itemId}`}

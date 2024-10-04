@@ -1,12 +1,14 @@
 import {
     Box,
-    Grid,
+    Grid, IconButton,
     Paper, Tab, Tabs, Tooltip,
     Typography
 } from "@mui/material";
 import React, {CSSProperties, useEffect, useState} from "react";
 import http from "../../commons/http-commons";
 import {DataGrid, GridColDef} from "@mui/x-data-grid";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpDrawerComponent from "../help/HelpDrawerComponent";
 
 interface Keyword{
     id: string,
@@ -24,7 +26,7 @@ function AnnotationComponent(props: any) {
     const keywordColumns: GridColDef[] = [
         {
             field: 'id',
-            headerName: 'ID',
+            headerName: 'Accession',
             width: 150,
             renderCell: (params: any) =>  (
                 <>
@@ -33,26 +35,15 @@ function AnnotationComponent(props: any) {
         },
         {
             field: 'term',
-            headerName: 'Term',
-            width: 150,
-        },
-        {
-            field: 'definition',
-            headerName: 'Definition',
-            width: 1500,
-            renderCell: (params: any) =>  (
-                <>
-                    <Tooltip title={params.value} placement="top-start">
-                        <span>{params.value}</span>
-                    </Tooltip>
-                </>)
+            headerName: 'Name',
+            width: 800,
         }
     ];
 
     const goColumns: GridColDef[] = [
         {
             field: 'id',
-            headerName: 'ID',
+            headerName: 'Accession',
             width: 150,
             renderCell: (params: any) =>  (
                 <>
@@ -61,45 +52,30 @@ function AnnotationComponent(props: any) {
         },
         {
             field: 'category',
-            headerName: 'Category',
-            width: 150,
+            headerName: 'Onotology',
+            width: 250,
         },
         {
             field: 'term',
-            headerName: 'Term',
-            width: 150,
-        },
-        {
-            field: 'definition',
-            headerName: 'Definition',
-            width: 1500,
-            renderCell: (params: any) =>  (
-                <>
-                    <Tooltip title={params.value} placement="top-start">
-                        <span>{params.value}</span>
-                    </Tooltip>
-                </>)
+            headerName: 'Name',
+            width: 800,
         }
     ];
 
     const reactomeColumns: GridColDef[] = [
         {
             field: 'id',
-            headerName: 'ID',
+            headerName: 'Identifier',
             width: 150,
             renderCell: (params: any) =>  (
                 <>
                     <a href={"https://reactome.org/content/detail/"+params.value} target="_blank">{params.value}</a>
-                </>)
-        },
-        {
-            field: 'type',
-            headerName: 'Type',
-            width: 150,
+                </>
+            )
         },
         {
             field: 'value',
-            headerName: 'Term',
+            headerName: 'Pathway Name',
             width: 1000,
         }
     ]
@@ -127,6 +103,8 @@ function AnnotationComponent(props: any) {
     };
 
     const [tabValue, setTabValue] = useState(0);
+    const [openHelp, setOpenHelp] = useState(false);
+
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -134,12 +112,31 @@ function AnnotationComponent(props: any) {
 
     return(
         <>
-            {(goTerms && goTerms.length > 0 || keywords && keywords.length > 0) &&
-                <Paper style={paperStyle}>
+            {(goTerms && goTerms.length > 0 || keywords && keywords.length > 0 || reactome && reactome.length > 0) &&
+                <Paper style={paperStyle}   >
                     <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
                             <span style={{paddingLeft: '10px'}}>
                                 <h3>Annotations</h3>
                             </span>
+                            <div style={{
+                                display: "flex",
+                                width: "5%",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginLeft: "auto"
+                            }}>
+                                <IconButton
+                                    onClick={() => setOpenHelp(true)}
+                                    size={'small'}
+                                >
+                                    <HelpOutlineIcon/>
+                                </IconButton>
+                                <HelpDrawerComponent
+                                    helpType="BIOMOLECULE"
+                                    open={openHelp}
+                                    onClose={() => setOpenHelp(false)}
+                                />
+                            </div>
                     </div>
                     <Tabs value={tabValue} onChange={handleTabChange}>
                         {   goTerms && goTerms.length > 0 &&

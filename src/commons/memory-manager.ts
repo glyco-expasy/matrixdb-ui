@@ -15,6 +15,14 @@ const saveToLocalStorage = (key: string, newData: any) => {
     localStorage.setItem(key, JSON.stringify([...existingSet]));
 };
 
+const removeFromLocalStorage = (key: string, dataToRemove: any) => {
+    let existingData = localStorage.getItem(key);
+    let dataArray = existingData ? JSON.parse(existingData) : [];
+
+    let dataToSave = dataArray.filter((biomoleculeId: string) => !dataToRemove.includes(biomoleculeId));
+    localStorage.setItem(key, JSON.stringify([...dataToSave]));
+}
+
 const getFromLocalStorage = (key: string) => {
     try {
         const storedData = localStorage.getItem(key);
@@ -25,4 +33,4 @@ const getFromLocalStorage = (key: string) => {
     }
 };
 
-export {saveToLocalStorage, getFromLocalStorage};
+export {saveToLocalStorage, getFromLocalStorage, removeFromLocalStorage};

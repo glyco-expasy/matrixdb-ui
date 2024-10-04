@@ -10,6 +10,8 @@ import {connect, ConnectedProps} from "react-redux";
 import * as actions from "../../stateManagement/actions";
 import AssociationListComponent from "../tables/AssociationListComponent";
 import {AppDispatch, RootState} from "../../stateManagement/store";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpDrawerComponent from "../help/HelpDrawerComponent";
 
 
 interface TabPanelProps {
@@ -49,6 +51,7 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
     const [interactorStats, setInteractorStats] = useState<any | null>();
     const [isExpanded, setIsExpanded] = useState(true);
     const [tabValue, setTabValue] = useState(0);
+    const [openHelp, setOpenHelp] = useState(false);
 
     useEffect(() => {
         // Get network for biomoleculeId
@@ -63,8 +66,12 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
                     setInteractors(networkData.interactors);
                 }
 
+                // Partner count considering self interactions
+                let partnerCount = networkData.partnerCount;
+                let filtered = networkData.interactions.filter((interaction:any) => interaction.id === `${biomoleculeId}__${biomoleculeId}`)
+
                 let interactorStats = {
-                    partners: networkData.interactors.length,
+                    partners: partnerCount,
                     supportingEvidence : 0,
                     predictedInteractions: 0,
                     experimentalInteractions: 0
@@ -145,6 +152,24 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
                                 size={25}
                             />
                         </div>
+                        <div style={{
+                            display: "flex",
+                            width: "5%",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                            <IconButton
+                                onClick={() => setOpenHelp(true)}
+                                size={'small'}
+                            >
+                                <HelpOutlineIcon/>
+                            </IconButton>
+                            <HelpDrawerComponent
+                                helpType="BIOMOLECULE"
+                                open={openHelp}
+                                onClose={() => setOpenHelp(false)}
+                            />
+                        </div>
                     </div>
                 </Paper>
             }
@@ -153,16 +178,39 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
                 <div>
                     <Paper style={paperStyle}>
                         <>
-                            <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                background: '#e1ebfc',
+                            }}>
                                 <span style={{paddingLeft: '10px'}}>
                                     <h3>Interactions</h3>
                                 </span>
+                                <div style={{
+                                    display: "flex",
+                                    width: "5%",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    marginLeft: 'auto'
+                                }}>
+                                    <IconButton
+                                        onClick={() => setOpenHelp(true)}
+                                        size={'small'}
+                                    >
+                                        <HelpOutlineIcon/>
+                                    </IconButton>
+                                    <HelpDrawerComponent
+                                        helpType="BIOMOLECULE"
+                                        open={openHelp}
+                                        onClose={() => setOpenHelp(false)}
+                                    />
+                                </div>
                             </div>
                             <div>
                                 {
                                     interactorStats &&
                                     <div style={{clear: 'left', textAlign: 'left'}}>
-                                        <h4 >Participants: {interactorStats.partners - 1}</h4>
+                                        <h4 >Participants: {interactorStats.partners}</h4>
                                         {interactorStats.supportingEvidence > 0 &&
                                             <div style={{ display: 'flex' }}>
                                                 <h4 style={{ display: 'inline-block', margin: '0' }}>Experimentally Supported Interactions: {interactorStats.experimentalInteractions}</h4>

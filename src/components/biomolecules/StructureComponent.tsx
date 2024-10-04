@@ -6,7 +6,6 @@ import { PluginConfig } from 'molstar/lib/mol-plugin/config';
 import { PluginSpec } from 'molstar/lib/mol-plugin/spec';
 import { DefaultPluginUISpec, PluginUISpec } from 'molstar/lib/mol-plugin-ui/spec';
 import { PluginBehaviors } from 'molstar/lib/mol-plugin/behavior';
-import {CircularProgress, Paper} from "@mui/material";
 import {
     PresetStructureRepresentations,
     StructureRepresentationPresetProvider
@@ -20,18 +19,23 @@ import {
 import {SbNcbrPartialChargesPreset, SbNcbrPartialChargesPropertyProvider} from "molstar/lib/extensions/sb-ncbr";
 import "molstar/build/viewer/molstar.css";
 import pdblogo from "../../assets/images/pdb.png";
-import SelectableList from "../commons/lists/SelectableList";
+import {StructureSelection} from "molstar/lib/mol-model/structure/query";
+import {Script} from "molstar/lib/mol-script/script";
+import http from "../../commons/http-commons";
+import {IconButton, List, ListItem, Paper, Typography, CircularProgress} from "@mui/material";
+import {faEye} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
 const DefaultViewerOptions = {
     extensions: ObjectKeys({}),
     layoutIsExpanded: true,
-    layoutShowControls: false,
+    layoutShowControls: true,
     layoutShowRemoteState: true,
     layoutControlsDisplay: 'reactive' as PluginLayoutControlsDisplay,
-    layoutShowSequence: false,
+    layoutShowSequence: true,
     layoutShowLog: false,
-    layoutShowLeftPanel: false,
+    layoutShowLeftPanel: true,
 
     viewportShowExpand: PluginConfig.Viewport.ShowExpand.defaultValue,
     viewportShowControls: PluginConfig.Viewport.ShowControls.defaultValue,
@@ -44,9 +48,126 @@ const DefaultViewerOptions = {
     emdbProvider: PluginConfig.Download.DefaultEmdbProvider.defaultValue,
 };
 
+const PDBList: React.FC<any> = (props: any) => {
+
+    const {selectedItem, items, onItemChange, itemLogo, itemURL} = props;
+
+    const rowColor = (itemId: string, index: number) => {
+        if(selectedItem === itemId) {
+            return {border: '1px solid #3498db'};
+        } else {
+            if(index % 2 === 0) {
+                return {background: 'white'}
+            } else {
+                return {background: 'rgb(223,236,243)'};
+            }
+        }
+    }
+
+    const [expandedItems, setExpandedItems] = useState({});
+
+    // Function to toggle expansion state
+    const toggleExpand = (itemId: string) => {
+        setExpandedItems((prevState : any)=> ({
+            ...prevState,
+            [itemId]: !prevState[itemId] // Toggle the current state of the clicked item
+        }));
+    };
+
+    const onHighlight = (item: any, bindingRegion: any) => {
+        let pdbStart = item.pdb_start;
+        let unpStart = item.unp_start;
+        props.onHighlight(bindingRegion.region_start - (unpStart - pdbStart), bindingRegion.region_end - (unpStart - pdbStart));
+    }
+
+
+    return (
+        <List style={{
+            height: '500px',
+            overflowY: 'auto'
+        }}>
+            {items.map((item: any, index: number) => (
+                <div key={index}>
+                    <ListItem key={index}
+                              style={rowColor(item.id, index)}
+                              onClick={() => onItemChange(item.id)}
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%"
+                            }}
+                        >
+                            <Typography variant={'body2'}>
+                                {item.id}
+                            </Typography>
+                            <a
+                                href={`https://www.ebi.ac.uk/pdbe/entry/pdb/${item.id}`}
+                                target="_blank"
+                                style={{
+                                    marginLeft: "auto",
+                                    textDecoration: "none",
+                                }}
+                            >
+                                <img src={pdblogo} width="15px"/>
+                            </a>
+                        </div>
+                    </ListItem>
+                    {
+                        item.binding_regions && item.binding_regions.length > 0 &&
+                        <div style={{
+                            paddingLeft: '30px',
+                            paddingTop: '10px',
+                            background: 'lightgray'
+                        }}>
+                            <Typography variant="body2">
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                    <div style={{ flex: 1, fontWeight: 'bold' }}>Chains</div>
+                                    <div style={{ flex: 2, fontWeight: 'bold' }}>Binding Regions</div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    {
+                                        item.binding_regions.map((bindingRegion: any, index: number) => (
+                                            <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <span>{item.chain}</span>
+                                                </div>
+                                                <div style={{ flex: 2, display: 'flex', alignItems: 'center' }}>
+                                                    <span>
+                                                        {bindingRegion.region_start} - {bindingRegion.region_end}
+                                                    </span>
+                                                    <IconButton
+                                                        onClick={() => onHighlight(item, bindingRegion)}
+                                                        size='small'
+                                                        style={{ marginLeft: '10px' }}
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faEye}
+                                                            style={{
+                                                                marginRight: '10px',
+                                                                fontSize: '0.5em'
+                                                            }}
+                                                        />
+                                                    </IconButton>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                </div>
+                            </Typography>
+                        </div>
+                    }
+                </div>
+            ))}
+        </List>
+    );
+};
+
 const StructureViewerComponent: React.FC<any> = (props: any) => {
     const viewerContainer = useRef<HTMLDivElement>(null);
-    const [pdbIds, setPDBIds] = useState<Array<string>>([]);
+    const [pdbIds, setPDBIds] = useState<Array<any>>([]);
     const [plugin, setPlugin] = useState<any>(null);
     const [selectedPDB, setSelectedPDB] = useState<string>();
     const [loaded, setLoaded] = useState(false);
@@ -54,6 +175,88 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
     const handleOptionChange = (pdb : any) => {
         setSelectedPDB(pdb);
     };
+
+    useEffect(() => {
+        if(props.biomoleculeType === 'gag' || props.biomoleculeType === 'pfrag') {
+            if(Array.isArray(props.pdb)) {
+                let pdbs = props.pdb.map((pdb: string) => {return { id: pdb }});
+                setPDBIds(pdbs);
+                setSelectedPDB(pdbs[0].id);
+            } else {
+                setPDBIds([{id: props.pdb}]);
+                setSelectedPDB(props.pdb);
+            }
+        } else {
+            //let pdb = props.pdb;
+            //let pdbRegionMap: { [key: string]: any[] } = {};
+            /*pdb.forEach((pdb: any) => {
+                pdb.properties.forEach((pdbProperty: any) => {
+                    if(pdbProperty.type === "chains") {
+                        let chains = [];
+                        if(pdbProperty.value.split(',').length > 0) {
+                            chains = pdbProperty.value.split(',');
+                        } else {
+                            chains = [pdbProperty.value];
+                        }
+                        chains.forEach((chain:any) => {
+                            let value = chain.match('[0-9].*')[0];
+                            let start = parseInt(value.split('-')[0]);
+                            let end = parseInt(value.split('-')[1]);
+                            let region = `${start}-${end}`;
+                            if(!(region in pdbRegionMap)) {
+                                pdbRegionMap[region] = [];
+                            }
+                            pdb.chain = chain.split("=")[0];
+                            pdbRegionMap[region].push(pdb);
+                        });
+                    }
+                })
+            });*/
+
+            // Check for relevant binding regions
+            http.get(`/biomolecules/${props.biomolecule}/binding-regions`)
+                .then((response: any) => {
+
+                    /*response.data.forEach((bindingRegion: any) => {
+                        let region = bindingRegion.featur_value;
+                        let regionStart = parseInt(region.split('-')[0]);
+                        let regionEnd = parseInt(region.split('-')[1]);
+
+                        Object.keys(pdbRegionMap).forEach((region: string) => {
+                            let start = parseInt(region.split('-')[0]);
+                            let end = parseInt(region.split('-')[1]);
+                            if(regionStart >= start && regionEnd <= end) {
+                                pdbRegionMap[`${start}-${end}`].forEach((pdb: any) => {
+                                    if(!pdb.bindingRegions) pdb.bindingRegions = [];
+                                    let existing = pdb.bindingRegions.filter((region:any) => region.start === regionStart && region.end === regionEnd);
+                                    if(existing.length === 0) {
+                                        pdb.bindingRegions.push({
+                                            start: regionStart,
+                                            end: regionEnd,
+                                            chain: pdb.chain.toUpperCase()
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });*/
+
+                    let pdbList: any[] = [];
+                    Object.keys(response.data).forEach((pdb: string) => {
+                        let pdbEntry = response.data[pdb];
+                        let chains = pdbEntry.map((pdbEntry: any) => pdbEntry.chain).join('/');
+                        let fullEntry = pdbEntry[0];
+                        fullEntry['id'] = pdb;
+                        fullEntry['chain'] = chains;
+                        pdbList.push(fullEntry);
+                    });
+
+                    setPDBIds(pdbList);
+                    setSelectedPDB(pdbList[0].id);
+
+                });
+        }
+    }, []);
 
     useEffect(() => {
         if (viewerContainer.current) {
@@ -119,49 +322,40 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
                 ]
             };
 
-            let pdb = props.pdb;
-            if(Array.isArray(pdb)) {
-                setPDBIds(pdb);
-                setSelectedPDB(pdb[0]);
-            } else {
-                setPDBIds([pdb]);
-                setSelectedPDB(pdb);
-            }
-
             //if(selectedPDB) {
-                createPluginUI(viewerContainer.current, spec, {
-                    onBeforeUIRender: plugin => {
-                        plugin.builders.structure.representation.registerPreset(StructureRepresentationPresetProvider({
-                            id: 'preset-structure-representation-viewer-auto',
-                            display: {
-                                name: 'Automatic (w/ Annotation)', group: 'Annotation',
-                                description: 'Show standard automatic representation but colored by quality assessment (if available in the model).'
-                            },
-                            isApplicable(a) {
-                                return (a.data.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT')) || a.data.models.some(m => QualityAssessment.isApplicable(m, 'qmean')));
-                            },
-                            params: () => StructureRepresentationPresetProvider.CommonParams,
-                            async apply(ref, params, plugin) {
-                                const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, ref);
-                                const structure = structureCell?.obj?.data;
-                                if (!structureCell || !structure) return {};
+            createPluginUI(viewerContainer.current, spec, {
+                onBeforeUIRender: plugin => {
+                    plugin.builders.structure.representation.registerPreset(StructureRepresentationPresetProvider({
+                        id: 'preset-structure-representation-viewer-auto',
+                        display: {
+                            name: 'Automatic (w/ Annotation)', group: 'Annotation',
+                            description: 'Show standard automatic representation but colored by quality assessment (if available in the model).'
+                        },
+                        isApplicable(a) {
+                            return (a.data.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT')) || a.data.models.some(m => QualityAssessment.isApplicable(m, 'qmean')));
+                        },
+                        params: () => StructureRepresentationPresetProvider.CommonParams,
+                        async apply(ref, params, plugin) {
+                            const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, ref);
+                            const structure = structureCell?.obj?.data;
+                            if (!structureCell || !structure) return {};
 
-                                if (!!structure.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT'))) {
-                                    return QualityAssessmentPLDDTPreset.apply(ref, params, plugin);
-                                } else if (!!structure.models.some(m => QualityAssessment.isApplicable(m, 'qmean'))) {
-                                    return QualityAssessmentQmeanPreset.apply(ref, params, plugin);
-                                } else if (!!structure.models.some(m => SbNcbrPartialChargesPropertyProvider.isApplicable(m))) {
-                                    return SbNcbrPartialChargesPreset.apply(ref, params, plugin);
-                                } else {
-                                    return PresetStructureRepresentations.auto.apply(ref, params, plugin);
-                                }
+                            if (!!structure.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT'))) {
+                                return QualityAssessmentPLDDTPreset.apply(ref, params, plugin);
+                            } else if (!!structure.models.some(m => QualityAssessment.isApplicable(m, 'qmean'))) {
+                                return QualityAssessmentQmeanPreset.apply(ref, params, plugin);
+                            } else if (!!structure.models.some(m => SbNcbrPartialChargesPropertyProvider.isApplicable(m))) {
+                                return SbNcbrPartialChargesPreset.apply(ref, params, plugin);
+                            } else {
+                                return PresetStructureRepresentations.auto.apply(ref, params, plugin);
                             }
-                        }));
+                        }
+                    }));
 
-                    }
-                }).then((plugin) => {
-                    setPlugin(plugin);
-                });
+                }
+            }).then((plugin) => {
+                setPlugin(plugin);
+            });
             //}
 
         }
@@ -188,9 +382,29 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
                             setLoaded(true);
                             plugin.builders.structure.parseTrajectory(data, "mmcif")
                                 .then((trajectory: any) => {
-                                    plugin.builders.structure.hierarchy.applyPreset(trajectory, 'all-models', {useDefaultIfSingleModel: true});
+                                    //plugin.builders.structure.hierarchy.applyPreset(trajectory, 'all-models', {useDefaultIfSingleModel: true});
+
+                                    // Specify the model index you want to load, e.g., 0 for the first model
+                                    const modelIndex = 0;
+
+                                    // Create a model from the trajectory using the specified model index
+                                    plugin.builders.structure.createModel(trajectory, { modelIndex })
+                                        .then((model: any) => {
+                                            // Create a structure from the selected model
+                                            plugin.builders.structure.createStructure(model)
+                                                .then((structure: any) => {
+                                                    // Apply the desired representation to the structure
+                                                    plugin.builders.structure.representation.applyPreset(structure, 'auto');
+                                                });
+                                        });
                                 });
-                            
+
+                            plugin.canvas3d?.events?.hover.subscribe((e: any) => {
+                                // Prevent hover events from affecting persistent highlights
+                                e.preventDefault();  // Or handle it based on your specific use case
+                            });
+
+                            plugin.managers.interactivity.lociHighlights.clearHighlights();
                         }
                     });
             } catch(e: any) {
@@ -207,6 +421,21 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
         width: '100%',
         borderRadius: 0
     };
+
+    const highlightRegion = (start: number, end: number) =>  {
+        const data = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+        if (!data) return;
+
+        const seq_id_start = start;  // Start of range
+        const seq_id_end = end;   // End of range
+        const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+            'residue-test': Q.core.rel.inRange([Q.struct.atomProperty.macromolecular.label_seq_id(), seq_id_start, seq_id_end]),
+            'group-by': Q.struct.atomProperty.macromolecular.residueKey()
+        }), data);
+
+        const loci = StructureSelection.toLociWithSourceUnits(sel);
+        plugin.managers.interactivity.lociHighlights.highlight({ loci });
+    }
 
     return (
        <>
@@ -231,12 +460,13 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
                             <div style={{ display: 'flex' }}>
                                 <div style={{ flex: 0.5 }}>
                                     <div style={{padding: '10px' }}>
-                                        <SelectableList
+                                        <PDBList
                                             selectedItem={selectedPDB}
-                                            itemIds={pdbIds}
+                                            items={pdbIds}
                                             onItemChange={handleOptionChange}
                                             itemLogo={pdblogo}
                                             itemURL={'https://www.ebi.ac.uk/pdbe/entry/pdb/'}
+                                            onHighlight={highlightRegion}
                                         />
                                     </div>
                                 </div>

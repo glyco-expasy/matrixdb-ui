@@ -1,46 +1,95 @@
-# Getting Started with Create React App
+# MatrixDB Web Portal
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+MatrixDB is a curated interaction database focused on experimentally supported interactions mediated by components of the extracellular matrix (ECM), including proteins, proteoglycans, glycosaminoglycans, and bioactive ECM fragments collectively referred to as matrikines or matricryptins. This web portal provides an interactive interface to explore and visualize ECM-related interactions using modern web technologies.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Search Engine**: 
+  - **Basic Mode**: Provides a Solr-based free text search to search for biomolecules and publications.
+  - **Advanced Mode**: Allows for more granular searches using specific keywords.
 
-### `npm start`
+- **Interactive Network Visualizations**: Explore ECM-mediated interactions of a given biomolecule through interactive graphs powered by [Cytoscape.js](https://cytoscape.org/cytoscape.js/).
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **3D structure visualization for proteins and glycoaminoglycans**: 3D structure visualizations powered by [Mol-*](https://molstar.org/)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **[Network Explorer](https://matrixdb.univ-lyon1.fr/networks)**: A tool to build interaction networks, with a filtering feature to explore specific interaction networks.
 
-### `npm test`
+## Table of Contents
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. [Project Structure](#project-structure)
+2. [Technologies Used](#technologies-used)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Contributing](#contributing)
+6. [License](#license)
 
-### `npm run build`
+## Project Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```plaintext
+MatrixDB/
+│
+├── public/               # Public assets
+├── src/                  # Main source files
+│   ├── components/       # React components
+│   ├── commons/          # Common React components
+│   ├── stateManagement/  # Redux store management
+│   ├── assets/           # Utility functions
+│   ├── App.tsx            # Main React component
+│   └── index.tsx          # Entry point for the React app
+├── package.json          # Project dependencies and scripts
+└── README.md   
+```          
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Technologies Used
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React**: Frontend library for building the user interface.
+- **Cytoscape.js**: For interactive graph and network visualizations.
+- **D3.js**: For additional data visualizations.
+- **Node.js & NPM**: For managing dependencies and running the development server.
 
-### `npm run eject`
+## Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Prerequisites
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Ensure you have the following installed:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- [Node.js](https://nodejs.org/en/) (v14 or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Matrixdb-API](https://github.com/glyco-expasy/matrixdb-api) REST API access for
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Steps
 
-## Learn More
+1. Clone the repository:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```git clone https://github.com/yourusername/MatrixDB.git```
+   cd MatrixDB
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Install dependencies:
+
+    ```npm install```
+
+3. Run the development server:
+
+    ```npm start```
+    This will start the app on http://localhost:3000.
+
+
+## Usage
+
+- Access the home page at `http://localhost:3000`.
+- Use the **Basic Search** for a Solr-based free text search.
+- Use the **Advanced Search** to search with specific keywords, filtering ECM components and interactions.
+- Click on nodes in the visualizations to explore connections and associated data.
+- Navigate through different visualizations using the top menu.
+
+### Example Queries
+
+- Basic search for "collagen" to find all related biomolecules.
+- Advanced search with keyword filters like [gene:LOX](https://matrixdb.univ-lyon1.fr/search?query=gene:LOX&mode=1) and [name:Fibronectin](https://matrixdb.univ-lyon1.fr/search?query=name:fibronectin&mode=1).
+
+Please follow the project's coding standards and ensure that all contributions are well-documented and tested.
+
+## License
+
+This project is licensed under the GNU GPL v3.0 License. See the [LICENSE](https://choosealicense.com/licenses/gpl-3.0/) file for details.
+

@@ -14,15 +14,14 @@ function Footer() {
             display: 'flex',
             justifyContent: 'center',
             background: 'rgb(136, 132, 132)',
-            color: 'white',
-            padding: '10px'
+            color: 'white'
         }}>
                 <div style={{
                     width: '70%'
                 }}>
                     <Grid container spacing={2}>
                         {/* First Row with Images */}
-                        <Grid item xs={12} sm={6} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid item xs={12} sm={10} style={{ display: 'flex', alignItems: 'center' }}>
                             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
                                 <a href="https://www.sib.swiss" target="_blank" rel="noopener noreferrer">
                                     <img src={siblogo} style={{ width: '80px', height: 'auto', marginRight: '10px' }} className={"App-logo"} alt="SIB Logo" />
@@ -36,30 +35,36 @@ function Footer() {
                         </Grid>
 
                         {/* Second Column with Links */}
-                        <Grid item xs={12} sm={6} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <ul style={{ listStyleType: 'none', padding: 0, textAlign: 'right', fontSize: '14px', margin: 0 }}>
                                 <li style={{ margin: '5px 0' }}>
                                     <a style={{ color: 'white', textDecoration: 'none' }} href="/about">About MatrixDB</a>
                                 </li>
                                 <li style={{ margin: '5px 0' }}>
-                                    <a style={{ color: 'white', textDecoration: 'none' }} href="/networks">Downloads</a>
+                                    <a style={{ color: 'white', textDecoration: 'none' }} href="/naming">MatrixDB Nomenclature</a>
+                                </li>
+                                <li style={{ margin: '5px 0' }}>
+                                    <a style={{ color: 'white', textDecoration: 'none' }} href="/download">Download</a>
                                 </li>
                                 <li style={{ margin: '5px 0' }}>
                                     <a style={{ color: 'white', textDecoration: 'none' }} href="/networks">Network Explorer</a>
+                                </li>
+                                <li style={{ margin: '5px 0' }}>
+                                    <a style={{ color: 'white', textDecoration: 'none' }} href="/help">Help</a>
                                 </li>
                             </ul>
                         </Grid>
 
                         {/* Second Row with License Info */}
                         <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center', flexDirection: 'column' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2px' }}>
                                 <img src={ccbylogo} style={{
                                     width: '60px',
                                     height: 'auto',
                                     paddingLeft: '20px',
                                     paddingRight: '5px'
                                 }} className={"App-logo"}/>
-                                <span style={{ fontSize: '10px' }}>
+                                <span style={{ fontSize: '14px' }}>
                                     MatrixDB is distributed under the terms of the Creative Commons Attribution Licence CC BY 4.0
                                 </span>
                             </div>

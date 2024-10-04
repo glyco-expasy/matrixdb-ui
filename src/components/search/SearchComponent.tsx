@@ -2,12 +2,13 @@ import React, {useEffect, useState} from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     Box,
-    CircularProgress
+    CircularProgress, Typography
 } from "@mui/material";
 import http from "../../commons/http-commons";
 import { useNavigate } from 'react-router-dom';
 import ResultComponent from "./ResultComponent";
 import ComplexSearchBoxComponent from "./ComplexSearchBoxComponent";
+import LogoIcon from "../commons/icons/LogoIcon";
 
 function SearchComponent() {
 
@@ -59,7 +60,12 @@ function SearchComponent() {
                 <div className={"App App-search"}>
                         <div style={{textAlign: 'center'}}>
                             <h2>The extracellular matrix interaction database</h2>
-                            <h4>Database focused on interactions established by extracellular matrix proteins, proteoglycans and polysaccharide</h4>
+                            <h4>Database focused on interactions established by extracellular matrix proteins, proteoglycans and glycosaminoglycans</h4>
+                            <Typography variant="body2" component="div" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <span style={{ marginLeft: '8px' }}>MatrixDB is a member of the International Molecular Exchange consortium</span>
+                                <LogoIcon logoName="imex" width="60" height="auto" />
+
+                            </Typography>
                         </div>
                         <div style={{width: '70%'}}>
                             <ComplexSearchBoxComponent
@@ -85,7 +91,10 @@ function SearchComponent() {
                         searchDone && Object.keys(searchResults).length > 0 &&
                         <>
                             <div className={"App App-search"}>
-                                <div style={{width: '70%'}}>
+                                <div style={{
+                                    paddingTop: '10px',
+                                    width: '70%'
+                                }}>
                                     <ComplexSearchBoxComponent
                                         searchMode={searchMode}
                                         onLaunchSearch={launchSearch}
@@ -94,6 +103,7 @@ function SearchComponent() {
                                 </div>
                                 <div style={{width: '70%'}}>
                                     <ResultComponent
+                                        searchQuery={searchQuery}
                                         searchResults={searchResults}
                                     />
                                 </div>

@@ -45,7 +45,7 @@ export class FilterConfigurationManager {
             },
             {
                 id: 'ecm',
-                label: 'ECM Protein',
+                label: 'ECM Biomolecule',
                 options: {
                     type: FilterOptionType.list,
                     range: []
@@ -70,7 +70,7 @@ export class FilterConfigurationManager {
                         },
                     },
                     {   id: 'tpm',
-                        label: 'Expression Score (TPM)',
+                        label: 'Expression Value (TPM)',
                         options: {
                             type: FilterOptionType.numeric,
                             range: []

@@ -3,12 +3,8 @@ import {useParams} from "react-router";
 import http from "../../commons/http-commons";
 
 import {
-    AppBar,
-    Toolbar,
     List,
     ListItem,
-    ListItemText,
-    useTheme,
     ListItemButton,
     Box,
 } from '@mui/material';
@@ -43,8 +39,12 @@ function BiomoleculeComponent() {
                         ) {
                             setShowStructures(true);
                         }
-                        if(biomoleculeData.type !== 'gag' && ((biomoleculeData.annotations && biomoleculeData.annotations.go && biomoleculeData.annotations.go.length >0)
-                            || ( biomoleculeData.annotations && biomoleculeData.annotations.keywords && biomoleculeData.annotations.keywords.length > 0))) {
+                        if((biomoleculeData.type === 'protein' || biomoleculeData.type === 'multimer') &&
+                            (
+                                (biomoleculeData.annotations && biomoleculeData.annotations.go && biomoleculeData.annotations.go.length >0)
+                                ||
+                                ( biomoleculeData.annotations && biomoleculeData.annotations.keywords && biomoleculeData.annotations.keywords.length > 0)
+                            )) {
                             setShowKeywords(true);
                         }
                     }
@@ -169,7 +169,7 @@ function BiomoleculeComponent() {
                                                                 fontSize: "14px",
                                                             }}
                                                         >
-                                                          {'Expressions'}
+                                                          {'Expression'}
                                                         </span>
                                                         </ListItemButton>
                                                     </ListItem>
@@ -199,7 +199,7 @@ function BiomoleculeComponent() {
                                                                 fontSize: "14px",
                                                             }}
                                                         >
-                                                          {'Structures'}
+                                                          {'3D Structures'}
                                                         </span>
                                                         </ListItemButton>
                                                     </ListItem>
@@ -302,15 +302,19 @@ function BiomoleculeComponent() {
                                         id='structures'
                                         style={{marginBottom: '10px'}}>
                                         <StructureComponent
+                                            biomolecule={biomoleculeId}
+                                            biomoleculeType={biomolecule.type}
                                             pdb={biomolecule.molecular_details.pdb}
                                         />
                                     </div>
                                 }
                                 {
-                                    (biomolecule && biomolecule.type !== 'gag' && biomolecule.annotations) &&
-                                    ((biomolecule.annotations.go && biomolecule.annotations.go.length >0)
-                                        || (biomolecule.annotations && biomolecule.annotations.keywords && biomolecule.annotations.keywords.length > 0
-                                        || (biomolecule.xrefs && biomolecule.xrefs.reactome && biomolecule.xrefs.reactome.length > 0))) &&
+                                    biomolecule && (biomolecule.type === 'protein' || biomolecule.type === 'multimer') && biomolecule.annotations &&
+                                    (
+                                        (biomolecule.annotations.go && biomolecule.annotations.go.length >0)
+                                        || (biomolecule.annotations.keywords && biomolecule.annotations.keywords.length > 0)
+                                        || (biomolecule.xrefs && biomolecule.xrefs.reactome && biomolecule.xrefs.reactome.length > 0)
+                                    ) &&
                                     <div
                                         id='annotations'
                                         style={{marginBottom: '10px'}}>
