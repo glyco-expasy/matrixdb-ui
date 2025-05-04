@@ -45,7 +45,7 @@ export class FilterConfigurationManager {
             },
             {
                 id: 'ecm',
-                label: 'ECM Protein',
+                label: 'ECM Biomolecule',
                 options: {
                     type: FilterOptionType.list,
                     range: []
@@ -70,7 +70,7 @@ export class FilterConfigurationManager {
                         },
                     },
                     {   id: 'tpm',
-                        label: 'Expression Score (TPM)',
+                        label: 'Expression Value (TPM)',
                         options: {
                             type: FilterOptionType.numeric,
                             range: []
@@ -86,7 +86,7 @@ export class FilterConfigurationManager {
             },
             {
                 id: 'proteomicsExpression',
-                label: 'Proteomics Data',
+                label: 'Proteomic Data',
                 subCriteria: [
                     {
                         id: 'tissue',
@@ -105,7 +105,7 @@ export class FilterConfigurationManager {
                         },
                     },
                     {   id: 'score',
-                        label: 'Expression Score',
+                        label: 'Normalized Spectral Abundance Factor (NSAF)',
                         options: {
                             type: FilterOptionType.numeric,
                             range: []

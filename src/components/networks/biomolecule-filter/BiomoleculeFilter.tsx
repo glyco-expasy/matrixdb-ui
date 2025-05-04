@@ -10,12 +10,13 @@ interface BiomoleculeFilterProps {
     onFilterSelection: (filterCriteria: any) => void;
 }
 
-function BiomoleculeFilter(props: BiomoleculeFilterProps) {
 
-    const {searchQuery, biomolecules, onFilterSelection} = props;
-    const [filter, setFilter] = useState<Map<string, any>
-        | null>(null);
+function BiomoleculeFilter(props: any) {
+    const { searchQuery, biomolecules, onFilterSelection } = props;
+    const [filter, setFilter] = useState<Map<string, any> | null>(null);
     const [ncbiTaxonomy, setncbiTaxonomy] = useState<any | null>(null);
+    const [expanded, setExpanded] = useState<string[]>([]);
+    const [selected, setSelected] = useState<string | null>(null);
 
     useEffect(() => {
         // Group by the different categories
@@ -33,7 +34,7 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
             let type = biomolecule.biomolecule_type;
 
             // set/update type
-            if(!filter.has(type)) {
+            if (!filter.has(type)) {
                 filter.set(type, {
                     count: 0,
                     species: {},
@@ -45,18 +46,18 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
             currentType.count += 1;
 
             let species = biomolecule?.species;
-            if(species) {
-                if(!(species in currentType.species)) {
+            if (species) {
+                if (!(species in currentType.species)) {
                     currentType.species[species] = 0;
                 }
                 currentType.species[species] += 1;
             }
 
             let goTerms = biomolecule?.go_names;
-            if(goTerms) {
+            if (goTerms) {
                 goTerms.split(';').forEach((goTerm: string) => {
-                    if(goTerm.toLowerCase().includes(searchQuery.toLowerCase())) {
-                        if(!(goTerm in currentType.goTerms)) {
+                    if (goTerm.toLowerCase().includes(searchQuery.toLowerCase())) {
+                        if (!(goTerm in currentType.goTerms)) {
                             currentType.goTerms[goTerm] = 0;
                         }
                         currentType.goTerms[goTerm] += 1;
@@ -66,10 +67,10 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
         });
         setFilter(filter);
 
-    }, [props.searchQuery, props.biomolecules]);
+    }, [searchQuery, biomolecules]);
 
     useEffect(() => {
-        if(!ncbiTaxonomy) {
+        if (!ncbiTaxonomy) {
             http.get("/metadata/ncbi")
                 .then((ncbiResponse: any) => {
                     interface NcbiData {
@@ -78,10 +79,10 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
                     }
                     let ncbiMap: { [key: string]: NcbiData } = {};
 
-                    if(ncbiResponse.data.ncbi) {
+                    if (ncbiResponse.data.ncbi) {
                         Object.keys(ncbiResponse.data.ncbi).forEach((ncbiId: any) => {
                             ncbiMap[ncbiId] = {
-                                commonName : ncbiResponse.data.ncbi[ncbiId].common_name,
+                                commonName: ncbiResponse.data.ncbi[ncbiId].common_name,
                                 name: ncbiResponse.data.ncbi[ncbiId].name
                             }
                         });
@@ -91,12 +92,72 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
         }
     }, []);
 
-    return(
+    const handleToggle = (event: any, itemId: string, isExpanded: boolean,) => {
+        //setExpanded(nodeIds);
+        console.log(itemId)
+        //setExpanded([itemId])
+
+        const nodeIdParts = itemId.split('_');
+        const rootId = nodeIdParts[0];
+        const expandedNodes = [rootId];
+        if (nodeIdParts.length > 1) {
+            expandedNodes.push(`${rootId}_${nodeIdParts[1]}`);
+        }
+        setExpanded(expandedNodes);
+
+        // Determine type and value based on the node ID
+        let type = nodeIdParts.length === 3 ? nodeIdParts[1] : 'biomolecule';
+        let value = nodeIdParts.length === 3 ? nodeIdParts[2] : nodeIdParts[0];
+        console.log(type)
+        console.log(value)
+        onFilterSelection({
+            type,
+            value
+        });
+    };
+
+    const handleChange = (event: any, itemIds: string[]) => {
+        console.log(itemIds)
+
+        // only expand the current tree path
+        let firstItem = itemIds[0];
+        let itemComponents = firstItem.split('_');
+
+        let expandItems = [];
+        if(itemComponents.length > 1) {
+            let itemCategory = itemComponents[0];
+            expandItems.push(firstItem);
+            expandItems.push(itemCategory);
+        } else {
+            expandItems.push(firstItem);
+        }
+
+        setExpanded(expandItems);
+        /*setSelected(nodeId);
+        const nodeIdParts = nodeId.split('_');
+        const rootId = nodeIdParts[0];
+        const expandedNodes = [rootId];
+        if (nodeIdParts.length > 1) {
+            expandedNodes.push(`${rootId}_${nodeIdParts[1]}`);
+        }
+        setExpanded(expandedNodes);
+
+        // Determine type and value based on the node ID
+        let type = nodeIdParts.length === 3 ? nodeIdParts[1] : 'biomolecule';
+        let value = nodeIdParts.length === 3 ? nodeIdParts[2] : nodeIdParts[0];
+
+        onFilterSelection({
+            type,
+            value
+        });*/
+    };
+
+    return (
         <>
             <div
                 style={{
                     background: "#e0e7f2",
-                    height: '40px',
+                    height: '70px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -118,17 +179,18 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
             }}>
                 {
                     filter && ncbiTaxonomy &&
-                    <SimpleTreeView>
+                    <SimpleTreeView
+                        expandedItems={expanded}
+                        selectedItems={selected}
+                        onItemSelectionToggle={handleToggle}
+                        onExpandedItemsChange={handleChange}
+                    >
                         {
                             Array.from(filter.keys()).map((key: string) => (
                                 <TreeItem
                                     key={key}
                                     itemId={key}
                                     label={key}
-                                    onClick={() => onFilterSelection({
-                                        type: 'biomolecule',
-                                        value: key
-                                    })}
                                 >
                                     {
                                         Object.keys(filter.get(key)).map((subKey: any) => {
@@ -142,7 +204,7 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
                                                         {
                                                             Object.keys(filter.get(key)[subKey]).map((nestedKey: any) => {
                                                                 let label = nestedKey;
-                                                                if(subKey === 'species') {
+                                                                if (subKey === 'species') {
                                                                     label = ncbiTaxonomy[nestedKey] ? ncbiTaxonomy[nestedKey].name : nestedKey;
                                                                 }
                                                                 return (
@@ -150,10 +212,6 @@ function BiomoleculeFilter(props: BiomoleculeFilterProps) {
                                                                         key={`${key}_${subKey}_${nestedKey}`}
                                                                         itemId={`${key}_${subKey}_${nestedKey}`}
                                                                         label={label}
-                                                                        onClick={() => onFilterSelection({
-                                                                            type: subKey,
-                                                                            value: nestedKey
-                                                                        })}
                                                                     />
                                                                 )
                                                             })

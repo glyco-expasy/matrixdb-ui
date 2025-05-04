@@ -15,6 +15,9 @@ import {RootState} from "../../stateManagement/store";
 import {connect, ConnectedProps} from "react-redux";
 import FilterManager from "./filter/FilterManager";
 import cytoscapeLogo from "../../assets/images/cytoscape.png";
+import {faFileDownload} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {CSVLink} from "react-csv";
 
 function PartnerOverview(props: any) {
 
@@ -69,7 +72,7 @@ function AssociationOverview(props: any) {
                 <CardContent style={{ flex: 0.35, backgroundColor: 'white', padding: '20px' }}>
                     <Typography variant="body2" gutterBottom>
                         <a href={"/association/" + association.id} style={{ wordBreak: 'break-all' }}>
-                            {association.id && association.id}
+                            {association.id}
                         </a>
                     </Typography>
                     {
@@ -111,6 +114,22 @@ function Legend(){
                     <span>PFRAG</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%',backgroundColor: 'black', marginRight: '10px' }}></div>
+                    <span>Cation</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%',backgroundColor: 'lightpink', marginRight: '10px' }}></div>
+                    <span>Lipid</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%',backgroundColor: '#d3b486', marginRight: '10px' }}></div>
+                    <span>SPEP</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%',backgroundColor: 'lightgray', marginRight: '10px' }}></div>
+                    <span>Other</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                     <hr style={{ width: '20px', border: '2px solid black', marginRight: '10px' }} />
                     <span>Experimentally Supported</span>
                 </div>
@@ -128,6 +147,7 @@ function CytoscapeComponent(props: any) {
     const { biomoleculeId, participants, associations, context, originalNetwork } = props;
     const [selectedPartner, setSelectedPartner] = useState(null);
     const [selectedInteraction, setSelectedInteraction] = useState(null);
+    const [associationsToDownload, setAssociationsToDownload] = useState<any[]|[]>([]);
     const cyRef = useRef(null);
 
     const [quickSearchText, setQuickSearchText] = useState<string | null>(null);
@@ -135,6 +155,32 @@ function CytoscapeComponent(props: any) {
 
     const [filteredParticipants, setFilteredParticipnats] = useState<number>(0);
     const [filteredAssociations, setFilteredAssociations] = useState<number>(0);
+
+    useEffect(() => {
+        if(context && associations) {
+            let associationsToDownlaod: any[] = [];
+            associations.forEach((assocation: any) => {
+                let particpantId = null;
+                let p1 = assocation.participants[0];
+                if(p1 !== 1) {
+                    particpantId = p1;
+                }
+                if(assocation.participants.length > 1) {
+                    let p2 = assocation.participants[1];
+                    if(p2 !== 1) {
+                        particpantId = p2;
+                    }
+                }
+                associationsToDownlaod.push({
+                    participant: context.interactors.interactor_mapping[particpantId],
+                    id: assocation.id,
+                    score: assocation.score,
+                    type: assocation.type === 1 ? 'Experimental' : 'Predicted'
+                });
+                setAssociationsToDownload(associationsToDownlaod);
+            });
+        }
+    }, []);
 
     const circularLayout = {
         name: 'circle',
@@ -165,11 +211,11 @@ function CytoscapeComponent(props: any) {
         minTemp: 1.0
     }
 
-    let cy : any = null;
+    const cy = useRef(cytoscape());
 
     const generateDownloadLink = () => {
-        if(cy) {
-            const base64URI = cy.png();
+        if(cy.current) {
+            const base64URI = cy.current.png();
             const link = document.createElement('a');
             link.href = base64URI;
             link.download = `${biomoleculeId}-interactions-cytoscape-graph.png`;
@@ -178,8 +224,8 @@ function CytoscapeComponent(props: any) {
     };
 
     const generateCytoscapeLink = () => {
-        if(cy) {
-            const jsonGraph = JSON.stringify(cy.json());
+        if(cy.current) {
+            const jsonGraph = JSON.stringify(cy.current.json());
             const base64URI = `data:application/json;base64,${btoa(jsonGraph)}`;
             const link = document.createElement('a');
             link.href = base64URI;
@@ -297,10 +343,12 @@ function CytoscapeComponent(props: any) {
             let participantsToDraw: any[] = [];
             participants.forEach((participant: any) => {
                 if (filteredParticipants.has(participant.id)) {
+                    let participantId = context.interactors.interactor_mapping[participant.id];
                     participantsToDraw.push({
                         data: {
                             id: participant.id,
-                            label: participant.id,
+                            mdbId: participantId,
+                            label: participant.name,
                             type: participant.type
                         }
                     });
@@ -338,6 +386,19 @@ function CytoscapeComponent(props: any) {
                     } else {
                         secondParticipant = association.participants[1];
                     }
+
+                    if(firstParticipant === biomoleculeId) {
+                        if('-' in firstParticipant) {
+                            firstParticipant = firstParticipant.split('-')[0];
+                        }
+                    }
+
+                    if(secondParticipant === biomoleculeId) {
+                        if('-' in secondParticipant) {
+                            secondParticipant = secondParticipant.split('-')[0];
+                        }
+                    }
+
                     associationsToDraw.push({
                         data: {
                             source: firstParticipant,
@@ -353,140 +414,164 @@ function CytoscapeComponent(props: any) {
             elements.push(...participantsToDraw);
             elements.push(...associationsToDraw);
 
-            if (!cy) {
-                let layout;
-                if (filteredParticipants.size < 20) {
-                    layout = circularLayout;
-                } else {
-                    layout = coseLayout;
+            let layout;
+            if (filteredParticipants.size < 20) {
+                layout = circularLayout;
+            } else {
+                layout = coseLayout;
+            }
+            console.log("cytoscape initializting")
+            cy.current = cytoscape({
+                container: cyRef.current,
+                elements: elements,
+                layout: layout,
+                style: [
+                    {
+                        selector: 'node[id="' + biomoleculeId + '"]',
+                        style: {
+                            label: 'data(label)',
+                            width: "20px",
+                            height: "20px",
+                            'background-color': "green !important",
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-size': '10px',
+                            'font-family': 'Arial',
+                            'text-outline-color': '#000',
+                        }
+                    },
+                    {
+                        selector: 'node[type="interactor"]',
+                        style: {
+                            width: "10px",
+                            height: "10px",
+                            'background-color': "green",
+                        },
+                    },
+                    {
+                        selector: 'node[type="protein"]',
+                        style: {
+                            'background-color': "#f89406",
+                        },
+                    },
+                    {
+                        selector: 'node[type="gag"]',
+                        style: {
+                            'background-color': "#018FD5",
+                        },
+                    },
+                    {
+                        selector: 'node[type="multimer"]',
+                        style: {
+                            'background-color': "#6a09c5",
+                        },
+                    },
+                    {
+                        selector: 'node[type="pfrag"]',
+                        style: {
+                            'background-color': "#f5e214",
+                        },
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            width: "1px",
+                            'line-color': '#313030'
+                        },
+                    },
+                    {
+                        selector: 'edge[type="predicted"]',
+                        style: {
+                            width: "1px",
+                            'line-color': 'red'
+                        },
+                    },
+                ],
+                userZoomingEnabled: true,
+            });
+            console.log("cytoscape done")
+            // Calculate node size based on degree
+            const nodes = cy.current.nodes();
+            let maxDegree = 0;
+
+            console.log("Starting to calculate")
+            nodes.forEach((node: any) => {
+                const degree = node.degree(true);
+                if (degree > maxDegree) {
+                    maxDegree = degree;
                 }
-                console.log("cytoscape initializting")
-                cy = cytoscape({
-                    container: cyRef.current,
-                    elements: elements,
-                    layout: layout,
-                    style: [
-                        {
-                            selector: 'node[id="' + biomoleculeId + '"]',
-                            style: {
-                                label: 'data(label)',
-                                width: "20px",
-                                height: "20px",
-                                'background-color': "green !important",
-                                'text-valign': 'center',
-                                'text-halign': 'center',
-                                'font-size': '10px',
-                                'font-family': 'Arial',
-                                'text-outline-color': '#000',
-                            }
-                        },
-                        {
-                            selector: 'node[type="interactor"]',
-                            style: {
-                                width: "10px",
-                                height: "10px",
-                                'background-color': "green",
-                            },
-                        },
-                        {
-                            selector: 'node[type="protein"]',
-                            style: {
-                                'background-color': "#f89406",
-                            },
-                        },
-                        {
-                            selector: 'node[type="gag"]',
-                            style: {
-                                'background-color': "#018FD5",
-                            },
-                        },
-                        {
-                            selector: 'node[type="multimer"]',
-                            style: {
-                                'background-color': "#6a09c5",
-                            },
-                        },
-                        {
-                            selector: 'node[type="pfrag"]',
-                            style: {
-                                'background-color': "#f5e214",
-                            },
-                        },
-                        {
-                            selector: 'edge',
-                            style: {
-                                width: "1px",
-                                'line-color': '#313030'
-                            },
-                        },
-                        {
-                            selector: 'edge[type="predicted"]',
-                            style: {
-                                width: "1px",
-                                'line-color': 'red'
-                            },
-                        },
-                    ],
-                    userZoomingEnabled: false,
-                });
-                console.log("cytoscape done")
-                // Calculate node size based on degree
-                const nodes = cy.nodes();
-                let maxDegree = 0;
+            });
+            console.log("Calculate the max degree " + maxDegree);
 
-                console.log("Starting to calculate")
-                nodes.forEach((node: any) => {
-                    const degree = node.degree(true);
-                    if (degree > maxDegree) {
-                        maxDegree = degree;
+            nodes.forEach((node: any) => {
+                const degree = node.degree(true);
+                const nodeSize = 20 + (20 * (degree / maxDegree));
+
+                node.style('width', nodeSize).style('height', nodeSize);
+            });
+            console.log("Calculated the node size")
+
+            //cy.current.zoom(1);
+
+            cy.current.on('mouseover', 'node', function (event: any) {
+                const node = event.target;
+                let nodeId = parseInt(node.id());
+                let selectedPartner = participants.filter((p: any) => p.id === nodeId)[0];
+                let newSelectedPartner = JSON.parse(JSON.stringify(selectedPartner))
+                if (selectedPartner) {
+                    newSelectedPartner.biomoleculeId = context.interactors.interactor_mapping[nodeId];
+                    setSelectedPartner(newSelectedPartner);
+                    setSelectedInteraction(null);
+                }
+            });
+
+            cy.current.on('mouseover', 'edge', function (event: any) {
+                let edge = event.target;
+                let associationId = edge.data().label;
+                let selectedInteraction = associations.find((association: any) => association.id === associationId);
+                setSelectedInteraction(selectedInteraction);
+                setSelectedPartner(null);
+            });
+
+            cy.current.on('zoom', function() {
+                var currentZoom = cy.current.zoom();
+
+                // Set the zoom level threshold for showing labels
+                var zoomThreshold = 3;
+
+                if (currentZoom >= zoomThreshold) {
+                    // Show node labels when zoom level is above the threshold
+                    cy.current.nodes().forEach(function(node: any) {
+                        node.style('label', node.data('label'))
+                        node.style('text-valign', 'center')
+                        node.style('text-halign', 'center')
+                        node.style('font-size', '4')
+                    });
+                } else {
+                    if(Object.keys(context.interactors.interactor_mapping).length <= 30) {
+                        cy.current.nodes().forEach(function(node: any) {
+                            node.style('label', node.data('label'))
+                            node.style('text-valign', 'center')
+                            node.style('text-halign', 'center')
+                            node.style('font-size', '4')
+                        });
+                    } else {
+                        cy.current.nodes().forEach(function(node: any) {
+                            node.style('label', '');
+                        });
                     }
-                });
-                console.log("Calculate the max degree " + maxDegree);
+                }
+            });
 
-                nodes.forEach((node: any) => {
-                    const degree = node.degree(true);
-                    const nodeSize = 20 + (20 * (degree / maxDegree));
-
-                    node.style('width', nodeSize).style('height', nodeSize);
-                });
-                console.log("Calculated the node size")
-                cy.zoom(1.5);
-
-                cy.on('click', 'node', function (event: any) {
-                    const node = event.target;
-                    let nodeId = parseInt(node.id());
-                    let selectedPartner = participants.filter((p: any) => p.id === nodeId)[0];
-                    let sortedIds = [props.biomoleculeId, context.interactors.interactor_mapping[selectedPartner.id]].sort();
-                    let selectedInteraction = associations.find((association: any) => association.id === sortedIds[0] + '__' + sortedIds[1]);
-                    if (selectedInteraction) {
-                        setSelectedInteraction(selectedInteraction);
-                        setSelectedPartner(null);
-                    }
-                });
-
-                cy.on('mouseover', 'node', function (event: any) {
-                    const node = event.target;
-                    let nodeId = parseInt(node.id());
-                    let selectedPartner = participants.filter((p: any) => p.id === nodeId)[0];
-                    let newSelectedPartner = JSON.parse(JSON.stringify(selectedPartner))
-                    if (selectedPartner) {
-                        newSelectedPartner.biomoleculeId = context.interactors.interactor_mapping[nodeId];
-                        setSelectedPartner(newSelectedPartner);
-                        setSelectedInteraction(null);
-                    }
-                });
-
-                cy.on('mouseout', 'node', function (event: any) {
-                    const node = event.target;
-                    //alert(`Mouseout on node: ${node.id()}`);
+            // Show labels for small networks
+            if(Object.keys(context.interactors.interactor_mapping).length <= 30) {
+                cy.current.nodes().forEach(function(node: any) {
+                    node.style('label', node.data('label'))
+                    node.style('text-valign', 'center')
+                    node.style('text-halign', 'center')
+                    node.style('font-size', '4')
                 });
             }
-
-            return () => {
-                /*if(cy) {
-                    cy.destroy();
-                }*/
-            };
         }
     }
 
@@ -496,102 +581,126 @@ function CytoscapeComponent(props: any) {
 
     return (
         <>
-            <Box display="flex">
-                <Box
-                    flex={0.65}
-                    bgcolor="lightgray"
-                    display="flex"
-                    flexDirection="column"
-                    position="relative"
-                >
-                    <Box width="220px" p={1}>
-                        {selectedPartner && <PartnerOverview partner={selectedPartner} />}
-                        {selectedInteraction && <AssociationOverview interaction={selectedInteraction} />}
-                    </Box>
-                    <Box mt="auto" p={1}>
-                        <Legend />
-                    </Box>
-                </Box>
-                <Box display="flex" flexDirection="column">
-                    <Tooltip title="Download an image" arrow>
-                        <IconButton size="small" style={{ color: 'green' }} onClick={generateDownloadLink} aria-label="download">
-                            <PhotoCameraIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Export to cytoscape" arrow>
-                        <IconButton size="small" style={{ color: 'green' }} onClick={generateCytoscapeLink} aria-label="download">
-                            <img src={cytoscapeLogo} style={{ width: '25px', height: 'auto' }} />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-                <Box flex={3} position="relative">
+            {cyRef &&
+                <Box display="flex">
                     <Box
-                        ref={cyRef}
-                        sx={{ width: '100%', height: '800px', position: 'relative' }}
-                    />
-                        <Paper
-                            elevation={3}
-                            sx={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                backgroundColor: '#fff',
-                            }}
-                        >
-                            <TextField
-                                id="outlined-textarea"
-                                label="Quick Search"
-                                placeholder="Search for participant(s)"
-                                onChange={onSeachText}
-                                onKeyDown={onQuickSearch}
-                                size="small"
-                            />
-                        </Paper>
+                        flex={0.65}
+                        bgcolor="lightgray"
+                        display="flex"
+                        flexDirection="column"
+                        position="relative"
+                    >
+                        <Box width="220px" p={1}>
+                            {selectedPartner && <PartnerOverview partner={selectedPartner} />}
+                            {selectedInteraction && <AssociationOverview interaction={selectedInteraction} />}
+                        </Box>
+                        <Box mt="auto" p={1}>
+                            <Legend />
+                        </Box>
+                    </Box>
+                    <Box display="flex" flexDirection="column">
+                        <Tooltip title="Download an image" arrow>
+                            <IconButton size="small" style={{ color: 'green' }} onClick={generateDownloadLink} aria-label="download">
+                                <PhotoCameraIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Export to cytoscape" arrow>
+                            <IconButton size="small" style={{ color: 'green' }} onClick={generateCytoscapeLink} aria-label="download">
+                                <img src={cytoscapeLogo} style={{ width: '25px', height: 'auto' }} />
+                            </IconButton>
+                        </Tooltip>
                         {
-                            (
-                                !quickSearchText && (originalNetwork.participants !== participants.length ||
-                                originalNetwork.associations !== associations.length
-                            )) &&
+                            associations &&
+                            <div style={{
+                                paddingLeft: '8px',
+                                paddingTop: '5px'
+                            }}>
+                                <CSVLink
+                                    data={associationsToDownload}
+                                    headers={['id','participant', 'score', 'type']}
+                                    filename={`interactions.csv`}
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faFileDownload}
+                                        style={{
+                                            marginRight: '10px',
+                                            fontSize: '1.5em'
+                                        }}
+                                        color={'darkgreen'}
+                                    />
+                                </CSVLink>
+                            </div>
+                        }
+                    </Box>
+                    <Box flex={3} position="relative">
+                        <Box
+                            ref={cyRef}
+                            sx={{ width: '100%', height: '800px', position: 'relative' }}
+                        />
                             <Paper
                                 elevation={3}
                                 sx={{
                                     position: 'absolute',
-                                    bottom: '10px',
+                                    top: '10px',
                                     right: '10px',
-                                    width: '170px',
-                                    height: '100px',
                                     display: 'flex',
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     backgroundColor: '#fff',
                                 }}
                             >
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}>
-                                    <div style={{
-                                        display: 'flex'
-                                    }}>
-                                        <Typography variant="body2">
-                                            Participants: {filteredParticipants} / {originalNetwork.participants}
-                                        </Typography>
-                                    </div>
-                                    <div style={{
-                                        display: 'flex'
-                                    }}>
-                                        <Typography variant="body2">
-                                            Associations: {filteredAssociations} / {originalNetwork.associations}
-                                        </Typography>
-                                    </div>
-                                </div>
+                                <TextField
+                                    id="outlined-textarea"
+                                    label="Quick Search"
+                                    placeholder="Search for participant(s)"
+                                    onChange={onSeachText}
+                                    onKeyDown={onQuickSearch}
+                                    size="small"
+                                />
                             </Paper>
-                        }
+                            {
+                                (
+                                    !quickSearchText && (originalNetwork.participants !== participants.length ||
+                                    originalNetwork.associations !== associations.length
+                                )) &&
+                                <Paper
+                                    elevation={3}
+                                    sx={{
+                                        position: 'absolute',
+                                        bottom: '10px',
+                                        right: '10px',
+                                        width: '170px',
+                                        height: '100px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: '#fff',
+                                    }}
+                                >
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex'
+                                        }}>
+                                            <Typography variant="body2">
+                                                Participants: {filteredParticipants} / {originalNetwork.participants}
+                                            </Typography>
+                                        </div>
+                                        <div style={{
+                                            display: 'flex'
+                                        }}>
+                                            <Typography variant="body2">
+                                                Associations: {filteredAssociations} / {originalNetwork.associations}
+                                            </Typography>
+                                        </div>
+                                    </div>
+                                </Paper>
+                            }
+                    </Box>
                 </Box>
-            </Box>
+            }
         </>
     );
 }

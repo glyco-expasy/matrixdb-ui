@@ -24,8 +24,11 @@ interface ParticipantToDisplay {
     id: string,
     biomolecule: string,
     detectionMethod: string,
+    detectionMethodPSIMI: string,
     biologicalRole: string,
+    biologicalRolePSIMI: string,
     experimentalRole: string
+    experimentalRolePSIMI: string
 }
 
 interface ExperimentToDisplay {
@@ -75,8 +78,8 @@ function ExperimentComponent() {
                         participants: experimentData.participants && Object.keys(experimentData.participants).map(pk  => {
                             return {
                                 id: experimentData.participants[pk].id || experimentData.participants[pk].biomolecule ,
-                                detectionMethod: experimentData.participants[pk].identification_method.name,
-                                detectionMethodPSIMI : experimentData.participants[pk].identification_method.id?.replace(':','_'),
+                                detectionMethod: experimentData.participants[pk]?.participant_detection_method.name,
+                                detectionMethodPSIMI : experimentData.participants[pk].participant_detection_method.id?.replace(':','_'),
                                 biologicalRole: experimentData.participants[pk].biological_role.name,
                                 biologicalRolePSIMI: experimentData.participants[pk].biological_role.id?.replace(':','_'),
                                 experimentalRole: experimentData.participants[pk].experimental_role.name,
@@ -377,13 +380,25 @@ function ExperimentComponent() {
                                                                 </a>
                                                             </div>
                                                             <Grid item xs={12}>
-                                                                <Typography variant={"body2"} align="left"><b>Participant Detection Method:</b> {participant.detectionMethod}</Typography>
+                                                                <Typography variant={"body2"} align="left"><b>Participant Detection Method: </b>
+                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.detectionMethodPSIMI }>
+                                                                        {participant.detectionMethod}
+                                                                    </a>
+                                                                </Typography>
                                                             </Grid>
                                                             <Grid item xs={12}>
-                                                                <Typography variant={"body2"} align="left"><b>Biological Role:</b> {participant.biologicalRole}</Typography>
+                                                                <Typography variant={"body2"} align="left"><b>Biological Role: </b>
+                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.biologicalRolePSIMI }>
+                                                                        {participant.biologicalRole}
+                                                                    </a>
+                                                                </Typography>
                                                             </Grid>
                                                             <Grid item xs={12}>
-                                                                <Typography variant={"body2"} align="left"><b>Experiment Role:</b> {participant.experimentalRole}</Typography>
+                                                                <Typography variant={"body2"} align="left"><b>Experiment Role: </b>
+                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.experimentalRolePSIMI }>
+                                                                        {participant.experimentalRole}
+                                                                    </a>
+                                                                </Typography>
                                                             </Grid>
                                                         </Paper>
                                                     </Grid>

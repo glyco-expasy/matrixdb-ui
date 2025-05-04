@@ -17,6 +17,8 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import XrefListComponent from "./overview/XrefListComponent";
 import SpeciesIcon from "../commons/icons/SpeciesIcon";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import HelpDrawerComponent from "../help/HelpDrawerComponent";
 
 interface BiomoleculeToDisplay {
     id: string,
@@ -48,6 +50,7 @@ function OverviewComponent(props: any) {
     const [biomoleculeToDisplay, setBiomoleculeToDisplay] = useState<BiomoleculeToDisplay>();
     const [tabConfig, setTabConfig] = useState<any[]>([]);
     const [isExpanded, setIsExpanded] = useState(true);
+    const [openHelp, setOpenHelp] = useState(false);
 
     useEffect(() => {
         if(!biomolecule) return;
@@ -72,7 +75,13 @@ function OverviewComponent(props: any) {
         biomoleculeToDisplay.id = biomolecule.id;
         biomoleculeToDisplay.type = biomolecule.type;
         biomoleculeToDisplay.name = biomolecule.names?.name;
-        biomoleculeToDisplay.otherNames = biomolecule.names?.other_name;
+        if(biomolecule.names && Array.isArray(biomolecule.names.other_name)) {
+            biomoleculeToDisplay.otherNames = biomolecule.names?.other_name;
+        } else {
+            if(biomolecule.names?.other_name) {
+                biomoleculeToDisplay.otherNames = [biomolecule.names?.other_name];
+            }
+        }
         biomoleculeToDisplay.recommendedName = biomolecule.names?.recommended_name;
         biomoleculeToDisplay.species = biomolecule?.species?.id;
         if(biomolecule.relations) {
@@ -130,7 +139,7 @@ function OverviewComponent(props: any) {
         }
 
         if(biomoleculeToDisplay && biomoleculeToDisplay.description) {
-            tabConfig.push({label: 'Comment', renderContent: () => biomoleculeToDisplay.description })
+            tabConfig.push({label: 'Description', renderContent: () => biomoleculeToDisplay.description })
         }
 
         if(biomoleculeToDisplay && biomoleculeToDisplay.structure) {
@@ -171,7 +180,7 @@ function OverviewComponent(props: any) {
                         {renderCrossRefContent('Complex Portal', 'https://www.ebi.ac.uk/complexportal/complex/', biomoleculeToDisplay.crossRefs.complex_portal)}
                         {renderCrossRefContent('CheBI', 'https://www.ebi.ac.uk/chebi/searchId.do?chebiId=', biomoleculeToDisplay.crossRefs.chebi)}
                         {renderCrossRefContent('EBI', 'https://www.ebi.ac.uk/intact/query/', biomoleculeToDisplay.crossRefs.EBI_xref)}
-
+                        {renderCrossRefContent('GlyTouCan', 'https://glytoucan.org/Structures/Glycans/', biomoleculeToDisplay.crossRefs.glytoucan)}
                     </>
                 )
             })
@@ -248,8 +257,7 @@ function OverviewComponent(props: any) {
 
     const cellStyles = {
         padding: '0px',
-        borderBottom: 'none',
-        width: '250px'
+        borderBottom: 'none'
     };
 
     return (
@@ -323,11 +331,29 @@ function OverviewComponent(props: any) {
                                             color: 'green',
                                         }}
                                         size="small"
-                                        label={`Matrisome ${biomoleculeToDisplay.ecmness.matrisome.category}`}
+                                        label={`${biomoleculeToDisplay.ecmness.matrisome.division} : ${biomoleculeToDisplay.ecmness.matrisome.category}`}
                                         variant="outlined"
                                     />
                                 </div>
                             }
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            width: "5%",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                            <IconButton
+                                onClick={() => setOpenHelp(true)}
+                                size={'small'}
+                            >
+                                <HelpOutlineIcon/>
+                            </IconButton>
+                            <HelpDrawerComponent
+                                helpType="BIOMOLECULE"
+                                open={openHelp}
+                                onClose={() => setOpenHelp(false)}
+                            />
                         </div>
 
                     </div>
@@ -350,7 +376,11 @@ function OverviewComponent(props: any) {
                                 <TableCell style={{...cellStyles, textAlign: 'right', paddingRight: '10px'}}><h4>Other Names</h4></TableCell>
                                 <TableCell style={cellStyles}>
                                     {
-                                        biomoleculeToDisplay?.otherNames
+                                        biomoleculeToDisplay?.otherNames?.map((name, index) => (
+                                            <div key={index}>
+                                                {name}
+                                            </div>
+                                        ))
                                     }
                                 </TableCell>
                             </Grid>}
@@ -366,7 +396,7 @@ function OverviewComponent(props: any) {
                                 <TableCell style={{...cellStyles, textAlign: 'right', paddingRight: '10px'}}><h4>Sequence Length</h4></TableCell>
                                 <TableCell style={cellStyles}>
                                     {
-                                        biomoleculeToDisplay?.molecularDetails.sequence_length
+                                        biomoleculeToDisplay?.molecularDetails?.sequence_length
                                     }
                                 </TableCell>
                             </Grid>}
@@ -375,7 +405,7 @@ function OverviewComponent(props: any) {
                                 {
                                     <TableCell style={cellStyles}>
                                         {
-                                            biomoleculeToDisplay.molecularDetails.stochiometry
+                                            biomoleculeToDisplay.molecularDetails?.stochiometry
                                                     .map((stochiometry: any, index: number) => (
                                                         <span key={index}>
                                                             {`${stochiometry.min} `}
@@ -417,31 +447,39 @@ function OverviewComponent(props: any) {
                         isExpanded && biomoleculeToDisplay && biomoleculeToDisplay.type === 'gag' &&
                         <>
                             <Tabs value={molecularDetailTabValue} onChange={handleMDTabChange}>
-                                <Tab key={0} label={<Typography variant="h6" style={{ textTransform: 'none', fontSize: '1rem' }}>
-                                    Symbol Nomenclature For Glycans
-                                </Typography>} />
-                                <Tab key={1} label={<Typography variant="h6" style={{ textTransform: 'none', fontSize: '1rem' }}>
-                                    GlycoCT
-                                </Typography>} />
+                                {biomoleculeToDisplay.molecularDetails?.snfg &&
+                                    <Tab key={0} label={<Typography variant="h6" style={{ textTransform: 'none', fontSize: '1rem' }}>
+                                        Symbol Nomenclature For Glycans
+                                    </Typography>} />
+                                }
+                                {biomoleculeToDisplay.molecularDetails?.glycoCT &&
+                                    <Tab key={1} label={<Typography variant="h6" style={{ textTransform: 'none', fontSize: '1rem' }}>
+                                        GlycoCT
+                                    </Typography>} />
+                                }
                             </Tabs>
-                            <TabPanel key={0} value={molecularDetailTabValue} index={0}>
-                                <div style={{paddingTop: '10px'}}>
-                                    <Paper style={{ width: '400px'}}>
-                                        <img src={process.env.REACT_APP_PUBLIC_URL + "img/snfg_img/"+biomoleculeToDisplay.molecularDetails.snfg} style={{ width: '400px'}}/>
-                                    </Paper>
-                                </div>
-                            </TabPanel>
-                            <TabPanel key={1} value={molecularDetailTabValue} index={1}>
-                                <div style={{paddingTop: '10px'}}>
-                                    <Paper style={{ width: '400px', maxHeight: '200px', overflow: 'auto'}}>
-                                        {
-                                            biomoleculeToDisplay.molecularDetails.glycoCT.split('@').map((line: string, index: number) => (
-                                                <Typography key={index}>{line}</Typography>
-                                            ))
-                                        }
-                                    </Paper>
-                                </div>
-                            </TabPanel>
+                            {biomoleculeToDisplay.molecularDetails?.snfg &&
+                                <TabPanel key={0} value={molecularDetailTabValue} index={0}>
+                                    <div style={{paddingTop: '10px'}}>
+                                        <Paper style={{ width: '400px'}}>
+                                            <img src={process.env.REACT_APP_PUBLIC_URL + "img/snfg_img/"+biomoleculeToDisplay.molecularDetails?.snfg} style={{ width: '400px'}}/>
+                                        </Paper>
+                                    </div>
+                                </TabPanel>
+                            }
+                            {biomoleculeToDisplay.molecularDetails?.glycoCT &&
+                                <TabPanel key={1} value={molecularDetailTabValue} index={1}>
+                                    <div style={{paddingTop: '10px'}}>
+                                        <Paper style={{ width: '400px', maxHeight: '200px', overflow: 'auto'}}>
+                                            {
+                                                biomoleculeToDisplay.molecularDetails?.glycoCT.split('@').map((line: string, index: number) => (
+                                                    <Typography key={index}>{line}</Typography>
+                                                ))
+                                            }
+                                        </Paper>
+                                    </div>
+                                </TabPanel>
+                            }
                         </>
                     }
             </Paper>

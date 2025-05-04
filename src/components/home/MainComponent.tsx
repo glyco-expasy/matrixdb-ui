@@ -21,7 +21,7 @@ function MainComponent() {
             fontFamily: 'Arial',
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '100vh'
+            height: '100vh'
         }}>
             <Header pageDetails={{
                 type: "home",
@@ -29,7 +29,8 @@ function MainComponent() {
             }}/>
             <main style={{ flex: 1}}>
                 <div style={{
-                    marginBottom: '20px'
+                    paddingTop: '30px',
+                    marginBottom: '5px'
                 }}>
                     <SearchComponent/>
                 </div>

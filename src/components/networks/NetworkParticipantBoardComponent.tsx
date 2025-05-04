@@ -26,7 +26,7 @@ const NetworkParticipantBoard: React.FC<any> = (props: any) => {
                 <div
                     style={{
                         background: "#e0e7f2",
-                        height: '40px',
+                        height: '70px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',

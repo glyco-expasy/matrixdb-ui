@@ -11,6 +11,7 @@ import DogIcon from '../../assets/images/species/dog_bullet.svg';
 import ZebraIcon from '../../assets/images/species/fish_bullet.svg';
 import RatIcon from '../../assets/images/species/rat_bullet.svg';
 import PigIcon from '../../assets/images/species/pig_bullet.svg';
+import RabbitIcon from '../../assets/images/species/rabbit_bullet.svg';
 import HIVIcon from '../../assets/images/species/hiv_bullet.svg';
 
 
@@ -39,7 +40,9 @@ const BiomoleculeBySpeciesComponent:  React.FC<any> = (props) => {
                         group: biomoleculeStats.type
                     };
                     Object.keys(biomoleculeStats.bySpecies).forEach((speciesId: string) => {
-                        dataValue[speciesId] = Math.log10(biomoleculeStats.bySpecies[speciesId].count);
+                        if(speciesId !== '984' && speciesId !== '10144') {
+                            dataValue[speciesId] = Math.log10(biomoleculeStats.bySpecies[speciesId].count);
+                        }
                     });
                     data.push(dataValue);
                     subgroups.unshift(...Object.keys(biomoleculeStats.bySpecies));
@@ -75,17 +78,29 @@ const BiomoleculeBySpeciesComponent:  React.FC<any> = (props) => {
                 { index: 4, label: 'Guinea Pig', color: '#ff7f00', icon: GuinePigIcon },
                 { index: 5, label: 'Chicken', color: '#ffff33', icon: ChickenIcon },
                 { index: 6, label: 'Dog', color: '#a65628', icon: DogIcon },
-                { index: 7, label: 'Bacterium', color: '#f781bf', icon: BacteriumIcon },
-                { index: 8, label: 'Zebra Fish', color: '#999999', icon: ZebraIcon },
-                { index: 9, label: 'Rat', color: '#66c2a5', icon: RatIcon },
-                { index: 10, label: 'HIV1', color: '#fc8d62', icon: HIVIcon },
-                { index: 11, label: 'Pig', color: '#8da0cb', icon: PigIcon }
+                { index: 7, label: 'Zebra Fish', color: '#999999', icon: ZebraIcon },
+                { index: 8, label: 'Rat', color: '#66c2a5', icon: RatIcon },
+                { index: 9, label: 'Pig', color: '#8da0cb', icon: PigIcon },
+                { index: 10, label: 'Rabit', color: '#8da0cb', icon: RabbitIcon }
             ];
+            const speciesNameMapping = {
+                7955 : 'Zebra Fish',
+                9606 : 'Human',
+                9615 : 'Dog',
+                9823 : 'Pig',
+                9913 : 'Bovine',
+                9940 : 'Sheep',
+                9031 : 'Chicken',
+                9986: 'Rabbit',
+                10090 : 'Mouse',
+                10116 : 'Rat',
+                44689: 'Dictyostelium discoideum'
+            }
             const color = d3.scaleOrdinal()
                 .domain(legendData.map((legend: any) => legend.label))
                 .range(legendData.map((legend: any) => legend.color));
 
-            const Tooltip = d3.select(svgRef.current)
+            const legendTooltip = d3.select(svgRef.current)
                 .append("div")
                 .style("opacity", 0)
                 .attr("class", "tooltip")
@@ -109,16 +124,38 @@ const BiomoleculeBySpeciesComponent:  React.FC<any> = (props) => {
                 .enter()
                 .append("g")
                     .attr("fill", d => color(d.key) as string)
+                    .on("mouseover", function(event, d) {
+                        legendTooltip
+                            .style("opacity", 1);
+                    })
+                    .on("mousemove", function(event, d) {
+                        /*let sum = Object.keys(d.data).map((sid: any) => {
+                            if(sid !== 'group' && d.data[sid]) {
+                                return Number(d.data[sid]);
+                            } else {
+                                return 0;
+                            }
+                        }).reduce((a: number, b: number) => a + b, 0);
+                        let percentage = Math.ceil(((d[1]-d[0])/sum) * 100);
+                        let subgroup = 'Human';*/
+                        legendTooltip
+                            .html( '<span>'+"subgroup" +' : '+"percentage"+'%</span>')
+                            .style("left", (event.pageX + 20) + "px")
+                            .style("top", (event.pageY) + "px");
+                    })
+                    .on("mouseout", function(event, d) {
+                        legendTooltip
+                            .style("opacity", 0);
+                    })
                     .selectAll("rect")
                     .data(d => d)
                     .enter()
                         .append("rect")
-                        .attr("y", d => y(d.data.group)  || 0)
-                        .attr("x", d => x(d[0]))
-                        .attr("dy", ".35em")
-                        .attr("height", y.bandwidth() * 0.95)
-                        .attr("width", d => x(d[1]) - x(d[0]));
-
+                            .attr("y", d => y(d.data.group)  || 0)
+                            .attr("x", d => x(d[0]))
+                            .attr("dy", ".35em")
+                            .attr("height", y.bandwidth() * 0.95)
+                            .attr("width", d => x(d[1]) - x(d[0]))
 
             let legend = svg.append("g")
 
@@ -127,23 +164,23 @@ const BiomoleculeBySpeciesComponent:  React.FC<any> = (props) => {
                 .data(legendData)
                 .enter()
                 .append("rect")
-                .attr("x", d => d.index * 30)
+                .attr("x", d => d.index * 30 + 60)
                 .attr("y", 100)
                 .attr("width", 30)
                 .attr("height", 30)
                 .style("fill", d => color(d.label) as string)
                 .on("mouseover", function(event, d) {
-                    Tooltip
+                    legendTooltip
                         .style("opacity", 1);
                 })
                 .on("mousemove", function(event, d) {
-                    Tooltip
+                    legendTooltip
                         .html( d.label)
                         .style("left", (event.pageX + 20) + "px")
                         .style("top", (event.pageY) + "px");
                 })
                 .on("mouseout", function(event, d) {
-                    Tooltip
+                    legendTooltip
                         .style("opacity", 0);
                 });
 
@@ -153,11 +190,11 @@ const BiomoleculeBySpeciesComponent:  React.FC<any> = (props) => {
                 .data(legendData)
                 .enter()
                 .append("image")
-                .attr("x", d => d.index * 30)
+                .attr("x", d => d.index * 20 + 60)
                 .attr("y", 105)
                 .attr("xlink:href", d => d.icon)
-                .attr("width", 20)
-                .attr("height", 20)
+                .attr("width", 40)
+                .attr("height", 40)
 
             svg.selectAll(".label")
                 .attr("transform", `translate(${margin.left},${margin.top})`)
