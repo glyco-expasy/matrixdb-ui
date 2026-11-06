@@ -14,8 +14,8 @@ export const ReadOnlyFilterCriterionComponent: React.FC<any> = ({
             square
             style={{
                 padding: '10px',
-                background: 'rgba(255, 255, 255, 0.9)',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                background: 'var(--mdb-surface)',
+                boxShadow: 'var(--mdb-shadow)'
             }}>
             <div>
                 <Typography variant="body2" style={{ fontWeight: 'bold' }}>
@@ -48,8 +48,8 @@ export const EditingFilterCriterionComponent: React.FC<any> = ({
             style={{
                 padding: '10px',
                 margin: '5px',
-                background: 'rgba(255, 255, 255, 0.9)',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                background: 'var(--mdb-surface)',
+                boxShadow: 'var(--mdb-shadow)',
                 height: 'auto'
             }}>
             <div>

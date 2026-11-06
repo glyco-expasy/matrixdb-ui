@@ -1,7 +1,7 @@
 import Header from "../home/HeaderComponent";
 import Footer from "../home/Footer";
 import imexlogo from "../../assets/images/imexlogo.png";
-import {Typography} from "@mui/material";
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import React from "react";
 import ccbylogo from "../../assets/images/ccby.png";
 import LogoIcon from "../commons/icons/LogoIcon";
@@ -24,15 +24,18 @@ function AboutComponent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         margin: '0 auto',
-                        width: '70%',
+                        width: 'max(70%, min(100%, 700px))',
                         marginBottom: '5px',
-                        background: 'rgb(237, 239, 245)',
+                        background: 'var(--mdb-surface)',
                         paddingTop: '20px'
                     }}>
 
                             <div style={{
                                 paddingRight: '20px',
-                                paddingLeft: '20px'
+                                paddingLeft: '20px',
+                                maxWidth: '100%',
+                                boxSizing: 'border-box',
+                                overflowWrap: 'anywhere'
                             }}>
                                 <Typography variant={"body1"}>
                                     MatrixDB is a curated interaction database focused on experimentally supported interactions mediated by the components of the extracellular matrix (ECM), namely proteins, proteoglycans, glycosaminoglycans, and bioactive ECM fragments collectively referred to as matrikines or matricryptins. It curate interactions with individual polypeptide chains or with native multimeric proteins (e.g. collagens, laminins, thrombospondins) when appropriate. Multimers are treated as permanent complexes.
@@ -44,7 +47,40 @@ function AboutComponent() {
                                     MatrixDB is one of the services of the French node of <a href="https://www.france-bioinformatique.fr/en/elixir-fr/">ELIXIR (IFB/ELIXIR-FR)</a>, and an active member of the <a href="https://www.imexconsortium.org/">IMEx consortium</a>, which is one of the Global Core Biodata Global Resources since 2023.
                                 </Typography><br/>
                                 <Typography variant={"body1"}>
-                                    Release MatrixDB 4.0 (2024-09-01) is based on release 2024-02 of IntAct, release 2024-01 of UniProtKB, release 2024-01 of BGee, release 2.0 of MatrisomeDB. This release also includes for the first time predicted ECM protein-protein interactions from the Integrated Interactions Database (IID) (2024-01)
+                                    Release MatrixDB 4.0 (2024-09-01) is based on the following source releases:
+                                </Typography>
+                                <TableContainer component={Paper} variant="outlined" style={{ margin: '12px 0' }}>
+                                    <Table size="small" aria-label="Sources of MatrixDB release 4.0">
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell><b>Source</b></TableCell>
+                                                <TableCell><b>Release</b></TableCell>
+                                                <TableCell><b>Provides</b></TableCell>
+                                                <TableCell><b>URL</b></TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {[
+                                                {source: 'IntAct', release: '2024-02', provides: 'Experimentally supported molecular interactions', url: 'https://www.ebi.ac.uk/intact/'},
+                                                {source: 'UniProtKB', release: '2024-01', provides: 'Protein sequences and annotations', url: 'https://www.uniprot.org/'},
+                                                {source: 'Bgee', release: '2024-01', provides: 'Gene expression (transcriptomic) data', url: 'https://www.bgee.org/'},
+                                                {source: 'MatrisomeDB', release: '2.0', provides: 'Matrisome classification and proteomic expression data', url: 'https://matrisomedb.org/'},
+                                                {source: 'Integrated Interactions Database (IID)', release: '2024-01', provides: 'Predicted ECM protein-protein interactions (included for the first time in this release)', url: 'https://iid.ophid.utoronto.ca/'},
+                                            ].map((row) => (
+                                                <TableRow key={row.source}>
+                                                    <TableCell>{row.source}</TableCell>
+                                                    <TableCell>{row.release}</TableCell>
+                                                    <TableCell>{row.provides}</TableCell>
+                                                    <TableCell>
+                                                        <a href={row.url} target="_blank" rel="noopener noreferrer">{row.url}</a>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Typography variant={"body1"} style={{ marginBottom: '12px' }}>
+                                    This release also includes for the first time predicted ECM protein-protein interactions from the Integrated Interactions Database (IID) (2024-01).
                                 </Typography>
                                 <Typography variant="body1" component="div" style={{ display: 'inline-flex', alignItems: 'center' }}>
                                     <span>MatrixDB is distributed under the terms of the Creative Commons Attribution Licence CC BY 4.0</span>
@@ -62,9 +98,9 @@ function AboutComponent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         margin: '0 auto',
-                        width: '70%',
+                        width: 'max(70%, min(100%, 700px))',
                         marginBottom: '5px',
-                        background: 'rgb(197,205,229)',
+                        background: 'var(--mdb-panel)',
                         paddingTop: '5px'
                     }}>
                             <Typography
@@ -85,16 +121,16 @@ function AboutComponent() {
                                     paddingLeft: '20px'
                                 }}>
                                 <li>
-                                    <a href="https://pubmed.ncbi.nlm.nih.gov/19147664/" target="_blank">MatrixDB, a database focused on extracellular protein-protein and protein-carbohydrate interactions.</a> Chautard E, Ballut L, Thierry-Mieg N, Ricard-Blum S. Bioinformatics <b>(2009)</b> 25:690-1.
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/19147664/" target="_blank" rel="noopener noreferrer">MatrixDB, a database focused on extracellular protein-protein and protein-carbohydrate interactions.</a> Chautard E, Ballut L, Thierry-Mieg N, Ricard-Blum S. Bioinformatics <b>(2009)</b> 25:690-1.
                                 </li>
                                 <li>
-                                    <a href="https://pubmed.ncbi.nlm.nih.gov/20852260/" target="_blank">MatrixDB, the extracellular matrix interaction database.</a> Chautard E, Fatoux-Ardore M, Ballut L, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2011)</b> 39(Database issue):D235-40.
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/20852260/" target="_blank" rel="noopener noreferrer">MatrixDB, the extracellular matrix interaction database.</a> Chautard E, Fatoux-Ardore M, Ballut L, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2011)</b> 39(Database issue):D235-40.
                                 </li>
                                 <li>
-                                    <a href="https://pubmed.ncbi.nlm.nih.gov/25378329/" target="_blank">MatrixDB, the extracellular matrix interaction database: updated content, a new navigator and expanded functionalities.</a> Launay G, Salza R, Multedo D, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2015)</b> 43(Database issue):D321-7.
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/25378329/" target="_blank" rel="noopener noreferrer">MatrixDB, the extracellular matrix interaction database: updated content, a new navigator and expanded functionalities.</a> Launay G, Salza R, Multedo D, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2015)</b> 43(Database issue):D321-7.
                                 </li>
                                 <li>
-                                    <a href="https://pubmed.ncbi.nlm.nih.gov/30371822/" target="_blank">MatrixDB: integration of new data with a focus on glycosaminoglycan interactions.</a> Clerc O, Deniaud M, Vallet SD, Naba A, Rivet A, Perez S, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2019)</b> 47(D1):D376-D381.
+                                    <a href="https://pubmed.ncbi.nlm.nih.gov/30371822/" target="_blank" rel="noopener noreferrer">MatrixDB: integration of new data with a focus on glycosaminoglycan interactions.</a> Clerc O, Deniaud M, Vallet SD, Naba A, Rivet A, Perez S, Thierry-Mieg N, Ricard-Blum S. Nucleic Acids Res. <b>(2019)</b> 47(D1):D376-D381.
                                 </li>
                                 <li>
                                     <a href="https://pubmed.ncbi.nlm.nih.gov/39558161/" target="_target">

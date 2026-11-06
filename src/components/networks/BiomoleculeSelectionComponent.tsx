@@ -115,7 +115,7 @@ const   BiomoleculeSelectionComponent: React.FC<any> = (props: any)  => {
                     <>
                         <div
                             style={{
-                                background: "#e0e7f2",
+                                background: 'var(--mdb-panel)',
                                 height: '70px',
                                 display: 'flex',
                                 alignItems: 'center',

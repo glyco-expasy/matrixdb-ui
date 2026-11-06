@@ -1,13 +1,37 @@
+/* Design tokens: the same values as theme.ts, for the many places that style with plain CSS or inline styles. */
+:root {
+  --mdb-navy: #0f2747;
+  --mdb-primary: #1f5fae;
+  --mdb-primary-soft: #e6effa;
+  --mdb-bg: #f4f6fa;
+  --mdb-surface: #ffffff;
+  --mdb-section-bg: #eaf1fb;
+  --mdb-panel: #dde8f7;
+  --mdb-border: #dfe6f1;
+  --mdb-text: #1b2a41;
+  --mdb-muted: #55657d;
+  --mdb-radius: 12px;
+  --mdb-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 4px 14px rgba(16, 24, 40, 0.07);
+}
+
 body {
   margin: 0;
-  font-family: 'Arial', 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background: var(--mdb-bg);
+  color: var(--mdb-text);
+  font-family: 'Arial', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* links: the browser's default blue underline everywhere looked dated; underline on hover instead */
+a { color: var(--mdb-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4 { color: var(--mdb-text); letter-spacing: -0.01em; }
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Arial', 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+::selection { background: #cfe0f7; }

@@ -70,7 +70,7 @@ function BiomoleculeHelp() {
                     <li>A description of the structure (source: ChEBI)</li>
                     <li>In-house annotation of the GAG sequence</li>
                     <li>Details of cellular location (source: ?)</li>
-                    <li>A depiction of the molecule in the <a href="https://www.ncbi.nlm.nih.gov/glycans/snfg.html" target="_blank">Symbol Nomenclature for Glycans (SNFG)</a></li>
+                    <li>A depiction of the molecule in the <a href="https://www.ncbi.nlm.nih.gov/glycans/snfg.html" target="_blank" rel="noopener noreferrer">Symbol Nomenclature for Glycans (SNFG)</a></li>
                     <li>The GlycoCT encoding of the GAG structure</li>
                     <li>Cross-references to GlyTouCan and ChEBI</li>
                 </ul>

@@ -77,9 +77,10 @@ function Header(props: HeaderProps) {
     const theme = useTheme();
 
     return(
-        <div style={{height: '5vh'}}>
+        <div className="header-spacer" style={{height: '5vh'}}>
         <AppBar
-            style={{ zIndex: theme.zIndex.drawer + 1, position: "fixed", top: 0 }}
+            style={{ zIndex: theme.zIndex.drawer + 1, position: "fixed", top: 0, background: 'var(--mdb-navy)',
+                boxShadow: '0 1px 0 rgba(255,255,255,0.06), 0 6px 20px rgba(15,39,71,0.25)' }}
             position="static"
         >
             <Toolbar className={'App-search-header'}>
@@ -88,35 +89,31 @@ function Header(props: HeaderProps) {
                         <img src={logo} style={{width: '50px', height: '50px'}} className={"App-logo"}/>
                     </div>
                 </a>
-                <div style={{ marginLeft: 'auto' }}>
-                    <span style={{ paddingRight: '4px' }}>
-                        <a style={{color: 'white', textDecoration: 'none', position: 'relative'}} href="/about">
+                <div className="nav-bar" style={{ marginLeft: 'auto' }}>
+                    <span className="nav-item">
+                        <a className="nav-link" href="/about">
                             About MatrixDB
                         </a>
-                        <span style={{color: 'white', padding: '0 4px'}}>|</span>
                     </span>
-                    <span style={{ paddingRight: '4px' }}>
-                        <a style={{color: 'white', textDecoration: 'none', position: 'relative'}} href="/naming">
+                    <span className="nav-item">
+                        <a className="nav-link" href="/naming">
                             MatrixDB Nomenclature
                         </a>
-                        <span style={{color: 'white', padding: '0 4px'}}>|</span>
                     </span>
-                    <span style={{paddingRight: '4px'}}>
-                        <a style={{color: 'white', textDecoration: 'none', position: 'relative'}} href="/download">
+                    <span className="nav-item">
+                        <a className="nav-link" href="/download">
                             Download
                         </a>
-                        <span style={{color: 'white', padding: '0 4px'}}>|</span>
                     </span>
-                    <span style={{ paddingRight: '4px' }}>
-                        <a style={{color: 'white', textDecoration: 'none', position: 'relative'}} href="/help">
+                    <span className="nav-item">
+                        <a className="nav-link" href="/help">
                             Help
                         </a>
                     </span>
                     {pageDetails.type !== 'network' &&
                         <>
-                            <span style={{color: 'white', padding: '0 4px'}}>|</span>
-                            <span style={{paddingRight: '4px'}}>
-                                <a style={{color: 'white', textDecoration: 'none', position: 'relative'}} href="/networks">
+                            <span className="nav-item">
+                                <a className="nav-link" href="/networks">
                                     Network Explorer
                                 </a>
                             </span>

@@ -10,8 +10,8 @@ import HelpDrawerComponent from "../help/HelpDrawerComponent";
 const searchBoxCardStyle = {
     display: 'flex',
     flexDirection: 'column',
-    background: 'rgb(197, 205, 229)',
-    borderRadius: 0
+    background: 'var(--mdb-panel)',
+    borderRadius: 'var(--mdb-radius)'
 } as React.CSSProperties;
 
 interface TabPanelProps {

@@ -31,7 +31,7 @@ function SearchBox(props: any) {
                     p: '2px 4px',
                     display: 'flex',
                     alignItems: 'center',
-                    borderRadius: 0,
+                    borderRadius: 'var(--mdb-radius)',
                     width: '100%'
                 }}
             >

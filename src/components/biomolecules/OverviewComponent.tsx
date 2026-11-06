@@ -248,11 +248,11 @@ function OverviewComponent(props: any) {
     };
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         width: '100%',
-        borderRadius: 0
+        borderRadius: 'var(--mdb-radius)'
     };
 
     const cellStyles = {
@@ -265,7 +265,7 @@ function OverviewComponent(props: any) {
             {
                 !biomolecule &&
                 <Paper style={paperStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--mdb-section-bg)' }}>
                         <div style={{
                             paddingLeft: '20px',
                             display: 'flex',
@@ -282,8 +282,9 @@ function OverviewComponent(props: any) {
                     <div
                         style={{
                             display: 'flex',
+                            flexWrap: 'wrap',
                             alignItems: 'center',
-                            background: '#e1ebfc'
+                            background: 'var(--mdb-section-bg)'
                         }}
                     >
                         <div style={{ paddingLeft: '20px'}}>

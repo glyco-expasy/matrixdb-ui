@@ -88,7 +88,8 @@ function ResultDetailsComponent(props: any) {
                                                 <div style={{
                                                     display: 'flex',
                                                     flexDirection: 'row',
-                                                    width: '800px'
+                                                    width: '100%',
+                                                    maxWidth: '800px'
                                                 }}>
                                                     {result.species && <div style={{ flex: '10%',paddingRight: '10px' }}>
                                                         <SpeciesIcon
@@ -207,25 +208,22 @@ function ResultDetailsComponent(props: any) {
 }
 
 interface TruncatedListItemTextProps {
-    text: string;
+    text: string | string[];
     url: string;
     length: number
 }
-const TruncatedListItemText: React.FC<TruncatedListItemTextProps> = ({ text, url,length }) => {
-    const truncatedText = text.length > length ? `${text.substring(0, length)}...` : text;
+// Solr returns text fields of some cores (publication title, ...) as a one-element list, and `.length` of that list is 1, so the
+// old character-count truncation never applied and long titles ran into the next column. The text is normalised to a string
+// and cut by CSS (ellipsis); the full text is in the tooltip.
+const TruncatedListItemText: React.FC<TruncatedListItemTextProps> = ({ text, url, length }) => {
+    const full = Array.isArray(text) ? text.join('; ') : String(text ?? '');
 
     return (
-        <Tooltip title={text.length > 80 ? text : ''} arrow>
-            <Typography variant="body2" noWrap>
-                {text.length > 80 ? (
-                    <a href={url} target="_blank">
-                        {truncatedText}
-                    </a>
-                ) : (
-                    <a href={url} target="_blank">
-                        {truncatedText}
-                    </a>
-                )}
+        <Tooltip title={full.length > length ? full : ''} arrow>
+            <Typography variant="body2" noWrap sx={{ minWidth: 0 }}>
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                    {full}
+                </a>
             </Typography>
         </Tooltip>
     );
@@ -328,11 +326,11 @@ function ResultComponent(props : any) {
                                 textAlign: 'center',
                                 marginBottom: '20px',
                                 width: '98%',
-                                minWidth: '1000px',
-                                borderRadius: 0
+                                minWidth: 'min(1000px, 100%)',
+                                borderRadius: 'var(--mdb-radius)'
                             }}>
                                 <div style={{
-                                    background: 'rgb(225, 235, 252)',
+                                    background: 'var(--mdb-section-bg)',
                                     height: '40px',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -393,6 +391,7 @@ function ResultComponent(props : any) {
                                     viewMode !== 'DETAILED' &&
                                     <div style={{
                                         display: 'flex',
+                                        flexWrap: 'wrap',
                                         justifyContent: 'space-around'
                                     }}>
                                         <List>
@@ -404,7 +403,7 @@ function ResultComponent(props : any) {
                                                         <div key={index} style={{
                                                             display: 'flex',
                                                             marginBottom: '10px',
-                                                            width: '500px'
+                                                            width: '100%', maxWidth: '500px'
                                                         }}>
                                                             {result.species && (
                                                                 <div style={{ flex: '10%', paddingRight: '10px' }}>
@@ -489,7 +488,7 @@ function ResultComponent(props : any) {
                                                         <Typography>
                                                             <div key={index} style={{
                                                                 display: 'flex',
-                                                                width: '500px',
+                                                                width: '100%', maxWidth: '500px',
                                                                 marginBottom: '10px'
                                                             }}>
                                                                 {result.species && (
@@ -599,7 +598,7 @@ function ResultComponent(props : any) {
                                     <>
                                         <div style={{ textAlign: 'left', marginBottom: '20px'}}>
                                             <div style={{
-                                                background: 'rgb(225, 235, 252)',
+                                                background: 'var(--mdb-section-bg)',
                                                 height: '40px',
                                                 display: 'flex',
                                                 alignItems: 'center',
@@ -611,7 +610,7 @@ function ResultComponent(props : any) {
                                                     Publications
                                                 </Typography>
                                             </div>
-                                            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
                                                 <List>
                                                     {props.searchResults.publications &&
                                                         props.searchResults.publications.slice(0,5).map((result: any, index: number) => (
@@ -619,11 +618,11 @@ function ResultComponent(props : any) {
                                                                 <Typography>
                                                                     <div key={index} style={{
                                                                         display: 'flex',
-                                                                        width: '400px',
+                                                                        width: 'min(400px, calc(100vw - 104px))',
                                                                         marginBottom: '10px',
                                                                         justifyContent: 'space-between'
                                                                     }}>
-                                                                        <div style={{ flex: 1 }}>
+                                                                        <div style={{ flex: 1, minWidth: 0 }}>
                                                                             <TruncatedListItemText
                                                                                 text={result.title}
                                                                                 url={`/publication/${result.publication_id}`}
@@ -655,11 +654,11 @@ function ResultComponent(props : any) {
                                                                 <Typography>
                                                                     <div key={index} style={{
                                                                         display: 'flex',
-                                                                        width: '400px',
+                                                                        width: 'min(400px, calc(100vw - 104px))',
                                                                         marginBottom: '10px',
                                                                         justifyContent: 'space-between'
                                                                     }}>
-                                                                        <div style={{ flex: 1 }}>
+                                                                        <div style={{ flex: 1, minWidth: 0 }}>
                                                                             <TruncatedListItemText
                                                                                 text={result.title}
                                                                                 url={`/publication/${result.publication_id}`}

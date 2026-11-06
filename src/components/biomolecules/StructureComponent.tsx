@@ -105,7 +105,7 @@ const PDBList: React.FC<any> = (props: any) => {
                             </Typography>
                             <a
                                 href={`https://www.ebi.ac.uk/pdbe/entry/pdb/${item.id}`}
-                                target="_blank"
+                                target="_blank" rel="noopener noreferrer"
                                 style={{
                                     marginLeft: "auto",
                                     textDecoration: "none",
@@ -171,6 +171,7 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
     const [plugin, setPlugin] = useState<any>(null);
     const [selectedPDB, setSelectedPDB] = useState<string>();
     const [loaded, setLoaded] = useState(false);
+    const [failed, setFailed] = useState(false);       // the structure list could not be loaded: stop the spinner and say so
 
     const handleOptionChange = (pdb : any) => {
         setSelectedPDB(pdb);
@@ -252,9 +253,13 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
                     });
 
                     setPDBIds(pdbList);
-                    setSelectedPDB(pdbList[0].id);
-
-                });
+                    if (pdbList.length > 0) {
+                        setSelectedPDB(pdbList[0].id);
+                    } else {
+                        setFailed(true);
+                    }
+                })
+                .catch(() => setFailed(true));
         }
     }, []);
 
@@ -414,12 +419,12 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
     }, [selectedPDB]);
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         height: '600px',
         width: '100%',
-        borderRadius: 0
+        borderRadius: 'var(--mdb-radius)'
     };
 
     const highlightRegion = (start: number, end: number) =>  {
@@ -448,16 +453,17 @@ const StructureViewerComponent: React.FC<any> = (props: any) => {
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                background: '#e1ebfc'
+                                background: 'var(--mdb-section-bg)'
                             }}>
                                     <span style={{
                                         paddingLeft: '10px'
                                     }}>
                                         <h3>3D Structures</h3>
-                                        {!loaded && <CircularProgress size={25}/>}
+                                        {!loaded && !failed && <CircularProgress size={25}/>}
+                                        {failed && <span style={{ fontSize: '13px', color: '#a33', paddingLeft: '8px' }}>The 3D structures could not be loaded right now.</span>}
                                     </span>
                             </div>
-                            <div style={{ display: 'flex' }}>
+                            <div style={{ display: failed ? 'none' : 'flex' }}>
                                 <div style={{ flex: 0.5 }}>
                                     <div style={{padding: '10px' }}>
                                         <PDBList

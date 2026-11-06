@@ -147,8 +147,8 @@ const NewFilterComponent: React.FC<NewFilterComponentProps> = ({
                 square
                 style={{
                     padding: '10px',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+                    background: 'var(--mdb-surface)',
+                    boxShadow: 'var(--mdb-shadow)'
                 }}>
                 {
                     <>

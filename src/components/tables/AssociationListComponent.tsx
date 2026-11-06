@@ -120,7 +120,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'id',
                 headerName: 'Participant',
-                width: 600,
+                flex: 2, minWidth: 220,
                 renderCell: (params: any) =>  (
                     <>
                         <a href={process.env.REACT_APP_PUBLIC_URL+"biomolecule/"+network.context.interactors.interactor_mapping[params.value]}>
@@ -130,7 +130,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'interactions',
                 headerName: 'Interactions',
-                width: 350,
+                flex: 1.4, minWidth: 190,
                 renderCell: (params: any) =>  (
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
                             {
@@ -151,7 +151,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'directlySupportedBy',
                 headerName: 'Non-expanded',
-                width: 200,
+                flex: 1, minWidth: 130,
                 renderCell: (params: any) =>  (
                     <>
                         {
@@ -181,7 +181,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
                                         sx: {
                                             background: '#fff',
                                             backgroundColor: '#ffffff',
-                                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                            boxShadow: 'var(--mdb-shadow)',
                                             maxWidth: '400px',
                                             border: '1px solid rgba(0, 0, 0, 0.1)'
                                         }
@@ -203,7 +203,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'spokeExpandedFrom',
                 headerName: 'Spoke Expanded',
-                width: 200,
+                flex: 1, minWidth: 130,
                 renderCell: (params: any) =>  (
                     <>
                         {
@@ -233,7 +233,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
                                         sx: {
                                             background: '#fff',
                                             backgroundColor: '#ffffff',
-                                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                            boxShadow: 'var(--mdb-shadow)',
                                             maxWidth: '400px',
                                             border: '1px solid rgba(0, 0, 0, 0.1)'
                                         }
@@ -255,7 +255,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'score',
                 headerName: 'MI Score',
-                width: 100,
+                flex: 0.6, minWidth: 90,
                 renderCell: (params: any) =>  (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         {
@@ -276,7 +276,7 @@ const AssociationListComponent : React.FC<AssociationListProps> = ({
             {
                 field: 'type',
                 headerName: 'Type',
-                width: 120,
+                flex: 0.7, minWidth: 100,
                 renderCell: (params: any) =>  (
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                         {

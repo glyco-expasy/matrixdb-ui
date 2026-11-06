@@ -56,11 +56,11 @@ function PublicationComponent() {
     const theme = useTheme();
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         width: '100%',
-        borderRadius: 0
+        borderRadius: 'var(--mdb-radius)'
     };
 
     const labelCellStyle = {
@@ -151,7 +151,7 @@ function PublicationComponent() {
                                     sx: {
                                         background: '#fff',
                                         backgroundColor: '#ffffff',
-                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                        boxShadow: 'var(--mdb-shadow)',
                                         maxWidth: '400px',
                                         border: '1px solid rgba(0, 0, 0, 0.1)'
                                     }
@@ -203,7 +203,7 @@ function PublicationComponent() {
                                     sx: {
                                         background: '#fff',
                                         backgroundColor: '#ffffff',
-                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                                        boxShadow: 'var(--mdb-shadow)',
                                         maxWidth: '400px',
                                         border: '1px solid rgba(0, 0, 0, 0.1)'
                                     }
@@ -251,7 +251,7 @@ function PublicationComponent() {
                 >
                     {publication &&
                         <Paper style={paperStyle}>
-                            <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', background: 'var(--mdb-section-bg)' }}>
                                 <div style={{ paddingLeft: '20px'}}>
                                     <h3>Publication: {publication.title}</h3>
                                 </div>
@@ -269,7 +269,7 @@ function PublicationComponent() {
                                         <TableCell
                                             style={cellStyles}>
                                             <Typography variant={"body2"} align="left">
-                                                <a href={`https://pubmed.ncbi.nlm.nih.gov/${publication.publication}`} target={'_blank'}>{publication.publication}</a>
+                                                <a href={`https://pubmed.ncbi.nlm.nih.gov/${publication.publication}`} target={'_blank'} rel="noopener noreferrer">{publication.publication}</a>
                                             </Typography>
                                         </TableCell>
                                     </Grid>
@@ -301,7 +301,7 @@ function PublicationComponent() {
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                background: '#e1ebfc',
+                                background: 'var(--mdb-section-bg)',
                                 paddingLeft: '20px',
                             }}>
                                 <div style={{clear: 'left', textAlign: 'left'}}>

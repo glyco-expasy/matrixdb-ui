@@ -27,13 +27,13 @@
   background-color: #96b5e200;
   padding-top: 30px;
   padding-bottom: 10px;
-  background-color: #e0e7f2;
+  background: linear-gradient(180deg, #e3ecf9 0%, var(--mdb-bg) 100%);
 }
 
 .App-search-header {
   position: sticky;
   top: 0;
-  background-color: #050a30;
+  background-color: var(--mdb-navy);
   height: 5px;
   z-index: 1;
 }
@@ -72,4 +72,39 @@ ref-section {
 
 .tooltip {
   position: absolute;
+}
+
+/* header navigation */
+.nav-item { display: inline-block; margin-left: 2px; }
+.nav-link {
+  color: rgba(255, 255, 255, 0.88);
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+
+/* phones: the header navigation scrolls sideways in one compact row instead of wrapping and being clipped */
+@media (max-width: 720px) {
+  .header-spacer { height: 56px !important; }
+  .nav-bar { overflow-x: auto; white-space: nowrap; max-width: calc(100vw - 96px); scrollbar-width: none; }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-item { margin-left: 0; }
+  .nav-link { padding: 6px 8px; font-size: 0.82rem; }
+}
+
+/* phones: the protein page's section menu is 10% of the width (about 39px), too narrow to read: hide it */
+@media (max-width: 720px) {
+  .protein-sidebar { display: none !important; }
+}
+
+/* phones: charts drawn at a fixed size must not push the page sideways */
+@media (max-width: 720px) {
+  .App svg { max-width: 100%; height: auto; }
 }

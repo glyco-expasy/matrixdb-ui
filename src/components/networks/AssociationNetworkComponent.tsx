@@ -212,6 +212,7 @@ function CytoscapeComponent(props: any) {
     }
 
     const cy = useRef(cytoscape());
+    const layoutRef = useRef<any>(null);
 
     const generateDownloadLink = () => {
         if(cy.current) {
@@ -421,10 +422,16 @@ function CytoscapeComponent(props: any) {
                 layout = coseLayout;
             }
             console.log("cytoscape initializting")
+            // Every graph gets its own host element. Cytoscape destroys any existing graph on a container as soon as a new one is
+            // created on it, which killed the previous graph before its (stopped) layout had taken its last animation frame:
+            // that frame then refreshed a graph with no renderer ("can't access property notify, renderer is null").
+            const host = document.createElement('div');
+            host.style.width = '100%';
+            host.style.height = '100%';
+            (cyRef.current as unknown as HTMLElement).replaceChildren(host);
             cy.current = cytoscape({
-                container: cyRef.current,
+                container: host,
                 elements: elements,
-                layout: layout,
                 style: [
                     {
                         selector: 'node[id="' + biomoleculeId + '"]',
@@ -489,6 +496,10 @@ function CytoscapeComponent(props: any) {
                 ],
                 userZoomingEnabled: true,
             });
+            // The layout used to be part of the config above. It is run here so that it can be stopped when the graph is replaced
+            // or the view is closed: a layout still animating after its graph was destroyed raised "renderer is null".
+            layoutRef.current = cy.current.layout(layout);
+            layoutRef.current.run();
             console.log("cytoscape done")
             // Calculate node size based on degree
             const nodes = cy.current.nodes();
@@ -577,6 +588,24 @@ function CytoscapeComponent(props: any) {
 
     useEffect(() => {
         drawGraph();
+        return () => {
+            const layout = layoutRef.current;
+            const instance = cy.current;
+            layoutRef.current = null;
+            if (layout) {
+                layout.stop();
+            }
+            if (instance && typeof instance.destroyed === 'function') {
+                // stop() does not cancel the layout's already scheduled animation frame: that frame runs once more and refreshes the
+                // graph a last time, which raised "renderer is null" when the graph was already destroyed. So the graph is destroyed
+                // just after that frame, and it is this instance (the effect may already have created its replacement).
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    if (!instance.destroyed()) {
+                        instance.destroy();
+                    }
+                }));
+            }
+        };
     }, [participants, associations]);
 
     return (

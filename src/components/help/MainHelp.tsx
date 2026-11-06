@@ -40,7 +40,7 @@ function MainHelp() {
                     margin: '0 auto',
                     width: '70%',
                     marginBottom: '5px',
-                    background: 'rgb(237, 239, 245)',
+                    background: 'var(--mdb-surface)',
                     paddingTop: '20px',
                 }}
             >

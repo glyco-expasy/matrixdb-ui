@@ -127,11 +127,11 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
     }, [biomoleculeId]);
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         width: '100%',
-        borderRadius: 0
+        borderRadius: 'var(--mdb-radius)'
     };
 
     const toggleExpansion = () => {
@@ -155,7 +155,7 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
             {
                 !interactors &&
                 <Paper style={paperStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--mdb-section-bg)' }}>
                         <div style={{
                             paddingLeft: '20px',
                             display: 'flex',
@@ -199,7 +199,7 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                background: '#e1ebfc',
+                                background: 'var(--mdb-section-bg)',
                             }}>
                                 <span style={{paddingLeft: '10px'}}>
                                     <h3>Interactions</h3>
@@ -282,7 +282,7 @@ const AssociationsOverviewComponent: React.FC<AssociationOverviewComponentProps>
                                             }}
                                             >
                                             <h3>PSCIQUIC View</h3>
-                                            <p>{psciquicInteractions} <a href={psciquicXref} target='_blank'>Binary interactions</a> </p>
+                                            <p>{psciquicInteractions} <a href={psciquicXref} target='_blank' rel="noopener noreferrer">Binary interactions</a> </p>
                                             </div>
                                         </div>
                                     )}

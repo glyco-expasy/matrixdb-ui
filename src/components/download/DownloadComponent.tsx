@@ -130,9 +130,9 @@ function DownloadComponent() {
                         flexDirection: 'column',
                         alignItems: 'center',
                         margin: '0 auto',
-                        width: '70%',
+                        width: 'max(70%, min(100%, 700px))',
                         marginBottom: '5px',
-                        background: 'rgb(237, 239, 245)',
+                        background: 'var(--mdb-surface)',
                         paddingTop: '20px'
                     }}>
                             <Typography
@@ -147,7 +147,10 @@ function DownloadComponent() {
                             </Typography>
                             <div style={{
                                 paddingRight: '20px',
-                                paddingLeft: '20px'
+                                paddingLeft: '20px',
+                                maxWidth: '100%',
+                                boxSizing: 'border-box',
+                                overflowWrap: 'anywhere'
                             }}>
                                 <Typography variant={"body2"} style={{fontWeight: 'bold'}}>
                                     MatrixDB manually curated interaction dataset  as a MITAB 2.7 file: <br/>
@@ -210,7 +213,7 @@ function DownloadComponent() {
                                 <br/>
                                 <Typography variant={"body2"} style={{fontWeight: 'bold'}}>
                                     The previous release of MatrixDB (release 3.4) is available at
-                                    <a href={'http://v1.matrixdb.univ-lyon1.fr/'} target="_blank"> http://v1.matrixdb.univ-lyon1.fr/
+                                    <a href={'http://v1.matrixdb.univ-lyon1.fr/'} target="_blank" rel="noopener noreferrer"> http://v1.matrixdb.univ-lyon1.fr/
                                     </a>
                                 </Typography>
                                 <br/>

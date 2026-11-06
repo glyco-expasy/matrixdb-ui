@@ -25,7 +25,7 @@ function NamingComponent() {
                         margin: '0 auto',
                         width: '70%',
                         marginBottom: '5px',
-                        background: 'rgb(197,205,229)',
+                        background: 'var(--mdb-panel)',
                         paddingTop: '5px'
                     }}
                 >

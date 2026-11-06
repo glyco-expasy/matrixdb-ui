@@ -63,7 +63,7 @@ function SearchComponent() {
                             <h4>Database focused on interactions established by extracellular matrix proteins, proteoglycans and glycosaminoglycans</h4>
                             <Typography variant="body2" component="div" style={{ display: 'inline-flex', alignItems: 'center' }}>
                                 <span style={{ marginLeft: '8px' }}>MatrixDB is a member of the International Molecular Exchange consortium</span>
-                                <a href="https://www.imexconsortium.org/" target="_blank">
+                                <a href="https://www.imexconsortium.org/" target="_blank" rel="noopener noreferrer">
                                     <LogoIcon logoName="imex" width="60" height="auto" />
                                 </a>
 

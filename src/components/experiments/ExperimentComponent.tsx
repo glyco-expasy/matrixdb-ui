@@ -127,20 +127,20 @@ function ExperimentComponent() {
     const theme = useTheme();
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         width: '100%',
-        borderRadius: 0,
+        borderRadius: 'var(--mdb-radius)',
         paddingBottom: '10px',
         paddingTop: '10px'
     };
 
     const participantPaperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         width: '100%',
-        borderRadius: 0,
+        borderRadius: 'var(--mdb-radius)',
         paddingLeft: '4px',
         paddingBottom: '4px',
         paddingTop: '4px'
@@ -187,7 +187,7 @@ function ExperimentComponent() {
                     <Box style={{ width: "60%", paddingTop: '20px' }}>
                         <Paper style={paperStyle}>
 
-                            <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', background: 'var(--mdb-section-bg)' }}>
                                 <div style={{ paddingLeft: '20px'}}>
                                     <h3>Experiment: {experiment.id}</h3>
                                 </div>
@@ -221,7 +221,7 @@ function ExperimentComponent() {
                                         <div style={{paddingBottom: '5px'}}>
                                             <Typography align="left">
                                                 <h4>Detection Method</h4>
-                                                <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +experiment.detectionMethod }>
+                                                <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +experiment.detectionMethod }>
                                                     {experiment.detectionMethod}
                                                 </a>
                                             </Typography>
@@ -233,7 +233,7 @@ function ExperimentComponent() {
                                         <div style={{paddingBottom: '5px'}}>
                                             <Typography align="left">
                                                 <h4>Interaction Type:</h4>
-                                                <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +experiment.type }>
+                                                <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +experiment.type }>
                                                     {experiment.type}
                                                 </a>
                                             </Typography>
@@ -245,7 +245,7 @@ function ExperimentComponent() {
                                         <div style={{paddingBottom: '5px'}}>
                                             <Typography align="left">
                                                 <h4>PMID</h4>
-                                                <a href={"https://pubmed.ncbi.nlm.nih.gov/"+experiment.pmid} target="_blank">{experiment.pmid}</a>
+                                                <a href={"https://pubmed.ncbi.nlm.nih.gov/"+experiment.pmid} target="_blank" rel="noopener noreferrer">{experiment.pmid}</a>
                                             </Typography>
                                         </div>
                                     </div>
@@ -255,7 +255,7 @@ function ExperimentComponent() {
                                         <div style={{paddingBottom: '5px'}}>
                                             <Typography align="left">
                                                 <h4>Source</h4>
-                                                <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +experiment.source }>
+                                                <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +experiment.source }>
                                                     {experiment.source}
                                                 </a>
                                             </Typography>
@@ -291,7 +291,7 @@ function ExperimentComponent() {
                                             <TableCell style={{...cellStyles, textAlign: 'right', paddingRight: '10px'}}><h4>Interaction Type</h4></TableCell>
                                             <TableCell style={cellStyles}>
                                                 <Typography variant={"body2"} align="left">
-                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +experiment.typePSIMI }>
+                                                    <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +experiment.typePSIMI }>
                                                         {experiment.type}
                                                     </a>
                                                 </Typography>
@@ -301,7 +301,7 @@ function ExperimentComponent() {
                                             <TableCell style={{...cellStyles, textAlign: 'right', paddingRight: '10px'}}><h4>Detection Method</h4></TableCell>
                                             <TableCell style={cellStyles}>
                                                 <Typography variant={"body2"} align="left">
-                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +experiment.detectionMethodPSIMI }>
+                                                    <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +experiment.detectionMethodPSIMI }>
                                                         {experiment.detectionMethod}
                                                     </a>
                                                 </Typography>
@@ -313,13 +313,13 @@ function ExperimentComponent() {
                                                 {
                                                     experiment.intactId &&
                                                     <Typography variant={"body2"} align="left">
-                                                        Intact <a href={'https://www.ebi.ac.uk/intact/details/interaction/'+experiment.intactId} target='_blank'>{experiment.intactId}</a>
+                                                        Intact <a href={'https://www.ebi.ac.uk/intact/details/interaction/'+experiment.intactId} target='_blank' rel="noopener noreferrer">{experiment.intactId}</a>
                                                     </Typography>
                                                 }
                                                 {
                                                     experiment.imexId &&
                                                     <Typography variant={"body2"} align="left">
-                                                        IMEX <a href={'https://www.ebi.ac.uk/intact/imex/main.xhtml?query=' +experiment.imexId} target='_blank'>{experiment.imexId}</a>
+                                                        IMEX <a href={'https://www.ebi.ac.uk/intact/imex/main.xhtml?query=' +experiment.imexId} target='_blank' rel="noopener noreferrer">{experiment.imexId}</a>
                                                     </Typography>
                                                 }
                                             </TableCell>
@@ -339,7 +339,7 @@ function ExperimentComponent() {
                                         <Grid item xs={6}>
                                             <TableCell style={{...cellStyles, textAlign: 'right', paddingRight: '10px'}}><h4>Source</h4></TableCell>
                                             <TableCell style={cellStyles}>
-                                                <a target='_blank' href={`http://purl.obolibrary.org/obo/${experiment.sourcePSIMI}`}>
+                                                <a target='_blank' rel="noopener noreferrer" href={`http://purl.obolibrary.org/obo/${experiment.sourcePSIMI}`}>
                                                     {experiment.source}
                                                 </a>
                                             </TableCell>
@@ -360,7 +360,7 @@ function ExperimentComponent() {
                                 <div style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    background: '#e1ebfc',
+                                    background: 'var(--mdb-section-bg)',
                                     paddingLeft: '20px',
                                 }}>
                                         <h4>Participants ({experiment.participants.length})</h4>
@@ -381,21 +381,21 @@ function ExperimentComponent() {
                                                             </div>
                                                             <Grid item xs={12}>
                                                                 <Typography variant={"body2"} align="left"><b>Participant Detection Method: </b>
-                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.detectionMethodPSIMI }>
+                                                                    <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +participant.detectionMethodPSIMI }>
                                                                         {participant.detectionMethod}
                                                                     </a>
                                                                 </Typography>
                                                             </Grid>
                                                             <Grid item xs={12}>
                                                                 <Typography variant={"body2"} align="left"><b>Biological Role: </b>
-                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.biologicalRolePSIMI }>
+                                                                    <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +participant.biologicalRolePSIMI }>
                                                                         {participant.biologicalRole}
                                                                     </a>
                                                                 </Typography>
                                                             </Grid>
                                                             <Grid item xs={12}>
                                                                 <Typography variant={"body2"} align="left"><b>Experiment Role: </b>
-                                                                    <a target="_blank"  href={"http://purl.obolibrary.org/obo/" +participant.experimentalRolePSIMI }>
+                                                                    <a target="_blank" rel="noopener noreferrer"  href={"http://purl.obolibrary.org/obo/" +participant.experimentalRolePSIMI }>
                                                                         {participant.experimentalRole}
                                                                     </a>
                                                                 </Typography>

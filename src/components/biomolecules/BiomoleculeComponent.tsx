@@ -80,6 +80,7 @@ function BiomoleculeComponent() {
                     }}/>
                     <Box display="flex" marginTop="4px">
                         <Box
+                            className="protein-sidebar"
                             style={{
                                 width: "10%",
                                 backgroundColor: "#f0f0f0",
@@ -108,7 +109,7 @@ function BiomoleculeComponent() {
                                                             paddingX: 0,
                                                             transition: "background 0.3s",
                                                             '&:hover': {
-                                                                backgroundColor: "rgba(12, 30, 88, 0.1)",
+                                                                backgroundColor: 'var(--mdb-primary-soft)',
                                                             },
                                                         }}
                                                     >
@@ -137,7 +138,7 @@ function BiomoleculeComponent() {
                                                                 paddingX: 0,
                                                                 transition: "background 0.3s",
                                                                 '&:hover': {
-                                                                    backgroundColor: "rgba(12, 30, 88, 0.1)",
+                                                                    backgroundColor: 'var(--mdb-primary-soft)',
                                                                 },
                                                             }}
                                                         >
@@ -167,7 +168,7 @@ function BiomoleculeComponent() {
                                                                 paddingX: 0,
                                                                 transition: "background 0.3s",
                                                                 '&:hover': {
-                                                                    backgroundColor: "rgba(12, 30, 88, 0.1)",
+                                                                    backgroundColor: 'var(--mdb-primary-soft)',
                                                                 },
                                                             }}
                                                         >
@@ -197,7 +198,7 @@ function BiomoleculeComponent() {
                                                                 paddingX: 0,
                                                                 transition: "background 0.3s",
                                                                 '&:hover': {
-                                                                    backgroundColor: "rgba(12, 30, 88, 0.1)",
+                                                                    backgroundColor: 'var(--mdb-primary-soft)',
                                                                 },
                                                             }}
                                                         >
@@ -227,7 +228,7 @@ function BiomoleculeComponent() {
                                                                 paddingX: 0,
                                                                 transition: "background 0.3s",
                                                                 '&:hover': {
-                                                                    backgroundColor: "rgba(12, 30, 88, 0.1)",
+                                                                    backgroundColor: 'var(--mdb-primary-soft)',
                                                                 },
                                                             }}
                                                         >

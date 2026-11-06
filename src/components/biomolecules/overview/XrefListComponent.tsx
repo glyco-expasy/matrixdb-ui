@@ -28,7 +28,7 @@ const XefListComponent: React.FC<any> = (props: any) => {
                             <div style={{ flexBasis: '10%', paddingRight: '10px', alignItems: 'center' }}>
                                 <a
                                     href={`${xrefLink}${item.id}`}
-                                    target={'_blank'}>
+                                    target={'_blank'} rel="noopener noreferrer">
                                     <Typography variant="body2">
                                         {item.id}
                                     </Typography>

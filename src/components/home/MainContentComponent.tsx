@@ -107,28 +107,27 @@ function MainContentComponent() {
     const cardStyle = {
         display: 'flex',
         flexDirection: 'column',
-        background: '#e7ebef',
-        borderRadius: 0,
+        background: 'var(--mdb-surface)',
+        border: '1px solid var(--mdb-border)',
+        boxShadow: 'var(--mdb-shadow)',
+        borderRadius: 'var(--mdb-radius)',
         height: '330px'
     } as React.CSSProperties;
 
     interface TruncatedListItemTextProps {
-        text: string;
+        text: string | string[];
         url: string;
     }
+    // Text may arrive as a one-element list (Solr multi-valued fields): normalise and cut by CSS, full text in the tooltip.
     const TruncatedListItemText: React.FC<TruncatedListItemTextProps> = ({ text, url }) => {
-        const truncatedText = text.length > 50 ? `${text.substring(0, 50)}...` : text;
+        const full = Array.isArray(text) ? text.join('; ') : String(text ?? '');
 
         return (
-            <Tooltip title={text.length > 50 ? text : ''} arrow>
-                <Typography variant="body2" noWrap>
-                    {text.length > 50 ? (
-                        <a href={url} target="_blank">
-                            {truncatedText}
-                        </a>
-                    ) : (
-                        truncatedText
-                    )}
+            <Tooltip title={full.length > 50 ? full : ''} arrow>
+                <Typography variant="body2" noWrap sx={{ minWidth: 0 }}>
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                        {full}
+                    </a>
                 </Typography>
             </Tooltip>
         );
@@ -143,7 +142,7 @@ function MainContentComponent() {
                 paddingTop: '20px',
                 margin: '0 auto',
                 marginBottom: '5px',
-                background: 'rgb(237, 239, 245)',
+                background: 'var(--mdb-surface)',
                 width: '70%'
             }}>
                 <Typography
@@ -312,7 +311,7 @@ function MainContentComponent() {
                 margin: '0 auto',
                 width: '70%',
                 marginBottom: '5px',
-                background: 'rgb(197,205,229)',
+                background: 'var(--mdb-panel)',
                 paddingTop: '5px'
             }}>
                 <Typography
@@ -339,7 +338,7 @@ function MainContentComponent() {
                         }}
                         color='green'
                     />
-                    Interaction networks can be built, filtered and modified using <a href="/networks" target="_blank">Network explorer</a>
+                    Interaction networks can be built, filtered and modified using <a href="/networks" target="_blank" rel="noopener noreferrer">Network explorer</a>
                 </Typography>
                 <Typography
                     variant={'body1'}
@@ -359,7 +358,7 @@ function MainContentComponent() {
                 margin: '0 auto',
                 width: '70%',
                 marginBottom: '5px',
-                background: 'rgb(237, 239, 245)',
+                background: 'var(--mdb-surface)',
                 paddingTop: '5px'
             }}>
                 <Typography
@@ -379,17 +378,17 @@ function MainContentComponent() {
                                 Interaction Data
                             </Typography>
                             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
-                                <a href="https://matrixdb.univ-lyon1.fr/" target="_blank">
+                                <a href="https://matrixdb.univ-lyon1.fr/" target="_blank" rel="noopener noreferrer">
                                     <LogoIcon logoName="matrixdb" width="50" height="auto" />
                                 </a>
-                                <a href="https://www.imexconsortium.org/" target="_blank">
+                                <a href="https://www.imexconsortium.org/" target="_blank" rel="noopener noreferrer">
                                     <LogoIcon logoName="imex" width="60" height="auto" />
                                 </a>
-                                <a href="https://www.ebi.ac.uk/intact/" target="_blank">
+                                <a href="https://www.ebi.ac.uk/intact/" target="_blank" rel="noopener noreferrer">
                                     <LogoIcon logoName="intact" width="100" height="auto" />
                                 </a>
                                 <Typography variant="body1">
-                                    <a href="http://iid.ophid.utoronto.ca/" target="_blank">Integrated Interactions Database (IID)</a>
+                                    <a href="http://iid.ophid.utoronto.ca/" target="_blank" rel="noopener noreferrer">Integrated Interactions Database (IID)</a>
                                 </Typography>
                             </div>
                         </div>

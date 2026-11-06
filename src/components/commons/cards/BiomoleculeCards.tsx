@@ -30,7 +30,7 @@ const BiomoleculeCard: React.FC<any> = (props: any) => {
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    width: '500px'
+                    width: '100%', maxWidth: '500px'
                 }}
             >
                 <div style={{

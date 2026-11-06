@@ -78,10 +78,10 @@ function Footer() {
                 }}>
                         <div style={{ flex: '25%' }}>
                             <div>
-                                <a href="https://www.sib.swiss" target={'_blank'}>
+                                <a href="https://www.sib.swiss" target={'_blank'} rel="noopener noreferrer">
                                     <img src={siblogo} style={{width: '80px', height: 'auto', paddingLeft: '40px'}} className={"App-logo"}/>
                                 </a>
-                                <a href="https://www.snf.ch" target={'_blank'}>
+                                <a href="https://www.snf.ch" target={'_blank'} rel="noopener noreferrer">
                                     <img src={snsflogo} style={{width: '180px', height: 'auto', paddingLeft: '20px'}} className={"App-logo"}/>
                                 </a>
                             </div>

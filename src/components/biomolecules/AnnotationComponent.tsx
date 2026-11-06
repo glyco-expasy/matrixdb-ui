@@ -30,7 +30,7 @@ function AnnotationComponent(props: any) {
             width: 150,
             renderCell: (params: any) =>  (
                 <>
-                    <a href={"https://www.uniprot.org/keywords/"+params.value} target="_blank">{params.value}</a>
+                    <a href={"https://www.uniprot.org/keywords/"+params.value} target="_blank" rel="noopener noreferrer">{params.value}</a>
                 </>)
         },
         {
@@ -47,7 +47,7 @@ function AnnotationComponent(props: any) {
             width: 150,
             renderCell: (params: any) =>  (
                 <>
-                    <a href={"https://amigo.geneontology.org/amigo/term/"+params.value} target="_blank">{params.value}</a>
+                    <a href={"https://amigo.geneontology.org/amigo/term/"+params.value} target="_blank" rel="noopener noreferrer">{params.value}</a>
                 </>)
         },
         {
@@ -69,7 +69,7 @@ function AnnotationComponent(props: any) {
             width: 150,
             renderCell: (params: any) =>  (
                 <>
-                    <a href={"https://reactome.org/content/detail/"+params.value} target="_blank">{params.value}</a>
+                    <a href={"https://reactome.org/content/detail/"+params.value} target="_blank" rel="noopener noreferrer">{params.value}</a>
                 </>
             )
         },
@@ -81,12 +81,12 @@ function AnnotationComponent(props: any) {
     ]
 
     const paperStyle = {
-        background: 'rgba(255, 255, 255, 0.9)',
-        boxShadow: '3px 3px 8px rgba(0, 0, 0, 0.3)',
+        background: 'var(--mdb-surface)',
+        boxShadow: 'var(--mdb-shadow)',
         padding: '16px',
         height: '550px',
         width: '100%',
-        borderRadius: 0
+        borderRadius: 'var(--mdb-radius)'
     };
 
     interface TabPanelProps {
@@ -114,7 +114,7 @@ function AnnotationComponent(props: any) {
         <>
             {(goTerms && goTerms.length > 0 || keywords && keywords.length > 0 || reactome && reactome.length > 0) &&
                 <Paper style={paperStyle}   >
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#e1ebfc' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: 'var(--mdb-section-bg)' }}>
                             <span style={{paddingLeft: '10px'}}>
                                 <h3>Annotations</h3>
                             </span>
