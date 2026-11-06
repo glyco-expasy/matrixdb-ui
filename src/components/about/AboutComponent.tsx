@@ -47,7 +47,7 @@ function AboutComponent() {
                                     MatrixDB is one of the services of the French node of <a href="https://www.france-bioinformatique.fr/en/elixir-fr/">ELIXIR (IFB/ELIXIR-FR)</a>, and an active member of the <a href="https://www.imexconsortium.org/">IMEx consortium</a>, which is one of the Global Core Biodata Global Resources since 2023.
                                 </Typography><br/>
                                 <Typography variant={"body1"}>
-                                    Release MatrixDB 4.0 (2024-09-01) is based on the following source releases:
+                                    Release MatrixDB 5.0 is based on the following source releases:
                                 </Typography>
                                 <TableContainer component={Paper} variant="outlined" style={{ margin: '12px 0' }}>
                                     <Table size="small" aria-label="Sources of MatrixDB release 4.0">
@@ -61,9 +61,9 @@ function AboutComponent() {
                                         </TableHead>
                                         <TableBody>
                                             {[
-                                                {source: 'IntAct', release: '2024-02', provides: 'Experimentally supported molecular interactions', url: 'https://www.ebi.ac.uk/intact/'},
-                                                {source: 'UniProtKB', release: '2024-01', provides: 'Protein sequences and annotations', url: 'https://www.uniprot.org/'},
-                                                {source: 'Bgee', release: '2024-01', provides: 'Gene expression (transcriptomic) data', url: 'https://www.bgee.org/'},
+                                                {source: 'IntAct', release: '2026-01', provides: 'Experimentally supported molecular interactions', url: 'https://www.ebi.ac.uk/intact/'},
+                                                {source: 'UniProtKB', release: '2026_03', provides: 'Protein sequences and annotations', url: 'https://www.uniprot.org/'},
+                                                {source: 'Bgee', release: '2024-08', provides: 'Gene expression (transcriptomic) data', url: 'https://www.bgee.org/'},
                                                 {source: 'MatrisomeDB', release: '2.0', provides: 'Matrisome classification and proteomic expression data', url: 'https://matrisomedb.org/'},
                                                 {source: 'Integrated Interactions Database (IID)', release: '2024-01', provides: 'Predicted ECM protein-protein interactions (included for the first time in this release)', url: 'https://iid.ophid.utoronto.ca/'},
                                             ].map((row) => (
@@ -79,9 +79,6 @@ function AboutComponent() {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                                <Typography variant={"body1"} style={{ marginBottom: '12px' }}>
-                                    This release also includes for the first time predicted ECM protein-protein interactions from the Integrated Interactions Database (IID) (2024-01).
-                                </Typography>
                                 <Typography variant="body1" component="div" style={{ display: 'inline-flex', alignItems: 'center' }}>
                                     <span>MatrixDB is distributed under the terms of the Creative Commons Attribution Licence CC BY 4.0</span>
                                     <img src={ccbylogo} style={{
