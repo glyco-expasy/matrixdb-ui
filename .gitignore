@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# per-server build configuration (REACT_APP_BASE_URL), not committed
+.env
